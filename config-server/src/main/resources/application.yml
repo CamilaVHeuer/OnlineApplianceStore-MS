@@ -1,0 +1,15 @@
+server:
+    port: 8001
+
+spring:
+  application:
+    name: config-server
+
+    cloud:
+      config:
+        server:
+          git:
+            uri: https://github.com/CamilaVHeuer/OnlineApplianceStore-MS.git
+            search-paths: config-data
+            username: ${GIT_USER}
+            password: ${GIT_PASSWORD}

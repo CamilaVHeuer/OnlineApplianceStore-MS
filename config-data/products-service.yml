@@ -22,9 +22,6 @@ spring:
       enabled: true
       path: /h2-console
 
-  config:
-    import: "optional:configserver:http://localhost:8001"
-
 server:
   port: 8083
 
@@ -32,3 +29,4 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+

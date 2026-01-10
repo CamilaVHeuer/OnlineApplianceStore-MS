@@ -1,9 +1,9 @@
 spring:
   application:
-    name: products-service
+    name: sales-service
 
   datasource:
-    url: jdbc:h2:mem:service_product;MODE=MySQL;DB_CLOSE_DELAY=-1;
+    url: jdbc:h2:mem:service_sales;MODE=MySQL;DB_CLOSE_DELAY=-1;
     driverClassName: org.h2.Driver
     username: sa
     password: ""
@@ -22,13 +22,11 @@ spring:
       enabled: true
       path: /h2-console
 
-  config:
-    import: "optional:configserver:http://localhost:8001"
-
 server:
-  port: 8083
+  port: 8081
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
