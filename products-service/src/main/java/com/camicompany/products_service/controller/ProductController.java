@@ -17,8 +17,7 @@ public class ProductController {
     @Autowired
     private IProductService prodServ;
 
-    @Value("${server.port}")
-    private int serverPort;
+
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -28,7 +27,6 @@ public class ProductController {
 
     @GetMapping ("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        System.out.println("Products Service running on port: " + serverPort);
         return ResponseEntity.ok(prodServ.getProductById(id));
     }
 
