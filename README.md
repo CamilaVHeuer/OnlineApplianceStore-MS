@@ -27,10 +27,10 @@ _Diagrama que muestra la interacción entre todos los microservicios, patrones i
 ### Servicios Implementados
 
 | Servicio                  | Puerto | Descripción                             | Base de Datos |
-| ------------------------- | ------ | --------------------------------------- | ------------- |
+| ------------------------- |--------| --------------------------------------- | ------------- |
 | **Config Server**         | 8001   | Gestión centralizada de configuración   | -             |
 | **Eureka Server**         | 8761   | Registro y descubrimiento de servicios  | -             |
-| **API Gateway**           | 8080   | Enrutamiento y balanceado de carga      | -             |
+| **API Gateway**           | 8000   | Enrutamiento y balanceado de carga      | -             |
 | **Products Service**      | 8083   | Gestión de productos y stock            | H2            |
 | **Shopping Cart Service** | 8082   | Gestión de carritos de compra           | H2            |
 | **Sales Service**         | 8081   | Procesamiento de ventas y transacciones | H2            |
@@ -83,6 +83,7 @@ _Diagrama que muestra la interacción entre todos los microservicios, patrones i
 
 - **Maven** (Gestión de dependencias)
 - **Postman** (Testing de APIs)
+- **Postman Collection** (Incluida en el proyecto - `OnlineApplianceStore.postman_collection.json`)
 
 ## 📋 Prerrequisitos
 
@@ -136,6 +137,13 @@ mvn spring-boot:run
   - Products: http://localhost:8083/h2-console
   - Shopping Cart: http://localhost:8082/h2-console
   - Sales: http://localhost:8081/h2-console
+
+### 4. Importar colección de Postman (Opcional)
+
+Para facilitar las pruebas, importa la colección incluida:
+
+- Archivo: `OnlineApplianceStore.postman_collection.json`
+- Contiene todos los endpoints con ejemplos de peticiones
 
 ## 📡 Endpoints de API
 
@@ -248,6 +256,28 @@ El sistema implementa un manejo de estados similar al **Saga Pattern**:
 
 ## 🧪 Testing con Postman
 
+### 📁 Colección de Pruebas Incluida
+
+El proyecto incluye una **colección completa de Postman** (`OnlineApplianceStore.postman_collection.json`) con todos los endpoints configurados y ejemplos de uso.
+
+#### Importar la Colección
+
+1. Abrir Postman
+2. Click en "Import"
+3. Seleccionar el archivo `OnlineApplianceStore.postman_collection.json`
+4. La colección aparecerá con todas las peticiones organizadas por servicio
+
+#### Variables de Entorno Sugeridas
+
+```json
+{
+  "gateway_url": "http://localhost:8080",
+  "products_port": "8083",
+  "cart_port": "8082",
+  "sales_port": "8081"
+}
+```
+
 ### Flujo de Prueba Completo
 
 1. **Crear Productos**
@@ -323,7 +353,6 @@ PUT http://localhost:8080/api/sales/cancel/1
 - **Dependency Injection**: Uso de Spring IoC
 - **Exception Handling**: Manejo centralizado de excepciones
 - **Data Transfer Objects**: DTOs para transferencia de datos
-
 
 ## 👨‍💻 Autor
 

@@ -3,7 +3,10 @@ spring:
     name: sales-service
 
   config:
-    import: configserver:http://localhost:8001
+    import: configserver:http://${CONFIG_SERVER_HOST:localhost}:8001
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:default}
 
 
 

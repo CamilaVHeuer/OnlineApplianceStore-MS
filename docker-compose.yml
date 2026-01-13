@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  config-server:
+      build: config-server
+      mem_limit: 512m
+      ports:
+        - "8001:8001"
+      networks:
+        - 'appliance-store-network'
+
+  eureka-sv:
+    build: eureka-sv
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+    networks:
+      - 'appliance-store-network'
+
+  api-gateway:
+    build: api-gateway
+    mem_limit: 512m
+    ports:
+      - "8000:8000"
+    environment:
+      - CONFIG_SERVER_HOST=config-server
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-sv
+    networks:
+      - 'appliance-store-network'
+
+  products-service:
+    build: products-service
+    mem_limit: 512m
+    ports:
+      - "8083:8083"
+    environment:
+      - CONFIG_SERVER_HOST=config-server
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-sv
+    networks:
+      - 'appliance-store-network'
+  shopping-cart-service:
+    build: shopping-cart-service
+    mem_limit: 512m
+    ports:
+      - "8082:8082"
+    environment:
+      - CONFIG_SERVER_HOST=config-server
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-sv
+    networks:
+      - 'appliance-store-network'
+  sales-service:
+    build: sales-service
+    mem_limit: 512m
+    ports:
+      - "8081:8081"
+    environment:
+      - CONFIG_SERVER_HOST=config-server
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-sv
+      - shopping-cart-service
+      - products-service
+    networks:
+      - 'appliance-store-network'
+
+networks:
+  appliance-store-network:
+    driver: bridge
