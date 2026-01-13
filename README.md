@@ -27,7 +27,7 @@ _Diagrama que muestra la interacción entre todos los microservicios, patrones i
 ### Servicios Implementados
 
 | Servicio                  | Puerto | Descripción                             | Base de Datos |
-| ------------------------- |--------| --------------------------------------- | ------------- |
+| ------------------------- | ------ | --------------------------------------- | ------------- |
 | **Config Server**         | 8001   | Gestión centralizada de configuración   | -             |
 | **Eureka Server**         | 8761   | Registro y descubrimiento de servicios  | -             |
 | **API Gateway**           | 8000   | Enrutamiento y balanceado de carga      | -             |
@@ -145,7 +145,60 @@ Para facilitar las pruebas, importa la colección incluida:
 - Archivo: `OnlineApplianceStore.postman_collection.json`
 - Contiene todos los endpoints con ejemplos de peticiones
 
-## 📡 Endpoints de API
+## � Ejecución con Docker
+
+### Construcción y Arranque
+
+```bash
+# Opción 1: Automática (un comando)
+docker-compose up --build
+
+# Opción 2: Secuencial (más estable)
+# 1. Infraestructura primero:
+docker-compose up config-server eureka-sv
+
+# 2. Esperar arranque completo, luego microservicios:
+docker-compose up products-service shopping-cart-service sales-service api-gateway
+```
+
+### Puertos Docker
+
+| Servicio         | Puerto Host |
+| ---------------- | ----------- |
+| Config Server    | 8001        |
+| Eureka Server    | 8761        |
+| API Gateway      | 8000        |
+| Products Service | 8083        |
+| Shopping Cart    | 8082        |
+| Sales Service    | 8081        |
+
+### Verificación Docker
+
+- **Containers**: `docker ps` (6 servicios activos)
+- **Eureka Dashboard**: http://localhost:8761
+- **Config Server**: `curl http://localhost:8001/sales-service/docker`
+
+### Configuración Dual
+
+- **Local**: Usa `application.yml` con `localhost`
+- **Docker**: Usa `*-docker.yml` con hostnames internos (`eureka-sv`, `config-server`)
+
+### Comandos Útiles
+
+```bash
+# Ver logs específicos
+docker-compose logs sales-service
+
+# Reiniciar con cambios
+docker-compose down && docker-compose up --build
+
+# Limpiar imágenes del proyecto
+docker rmi $(docker images "onlineappliancestore-ms-*" -q)
+```
+
+> **💡 Tip**: Si hay problemas de conexión, usar arranque secuencial. Los microservicios necesitan que Config Server y Eureka estén completamente listos.
+
+## �📡 Endpoints de API
 
 ### Products Service (via Gateway: `/products`)
 
@@ -330,7 +383,7 @@ PUT http://localhost:8080/api/sales/cancel/1
 
 ## 🎯 Próximas Implementaciones
 
-- [ ] **🐳 Dockerización** de todos los servicios
+- [x] **🐳 Dockerización** de todos los servicios
 - [ ] **🔐 Seguridad** con JWT y OAuth2
 - [ ] **📊 Monitoreo** con Micrometer y Prometheus
 - [ ] **📝 Testing** unitario e integración
