@@ -1,70 +1,78 @@
 # 🏪 Online Appliance Store - Microservices Architecture
 
-## 📋 Descripción
+<div align="center">
+  <img src="Appliances-log.png" alt="Online Appliance Store" width="## 🐳 Docker Execution
 
-Sistema de comercio electrónico para venta de electrodomésticos desarrollado con **arquitectura de microservicios** utilizando Spring Boot y Spring Cloud. Este proyecto demuestra la implementación de patrones de diseño distribuidos y mejores prácticas en desarrollo de microservicios.
+### Build and Startup"/>
+  
+  <## 📡 API Endpoints><em>E-commerce system developed with microservices architecture</em></p>
+</div>
 
-> **Nota**: Proyecto desarrollado como parte del aprendizaje en arquitectura de microservicios, basado en el curso de TodoCode, adaptado para portfolio profesional.
+## 📋 Description
 
-## 🏗️ Arquitectura de Microservicios
+E-commerce system for appliance sales developed with **microservices architecture** using Spring Boot and Spring Cloud. This project demonstrates the implementation of distributed design patterns and best practices in microservices development.
 
-### Patrones de Diseño Implementados
+> **Note**: Project developed as part of learning microservices architecture, based on TodoCode course, adapted for professional portfolio.
 
-- **🚪 API Gateway Pattern**: Punto único de entrada para todas las peticiones
-- **🔍 Service Discovery**: Registro y descubrimiento automático de servicios con Eureka
-- **⚙️ Centralized Configuration**: Configuración centralizada con Config Server
-- **🔄 Circuit Breaker**: Tolerancia a fallos con Resilience4j
-- **🔁 Retry Pattern**: Reintentos automáticos en llamadas entre servicios
-- **📋 MVC Pattern**: Arquitectura Modelo-Vista-Controlador en cada microservicio
-- **📦 DTO Pattern**: Transferencia de datos entre capas y servicios
+## 🏗️ Microservices Architecture
 
-### Diagrama de Arquitectura
+### Implemented Design Patterns
 
-![Arquitectura de Microservicios](Microservices%20Architecture%20–%20Online%20Appliance%20Store.drawio.png)
+- **🚪 API Gateway Pattern**: Single entry point for all requests
+- **🔍 Service Discovery**: Automatic service registration and discovery with Eureka
+- **⚙️ Centralized Configuration**: Centralized configuration with Config Server
+- **🔄 Circuit Breaker**: Fault tolerance with Resilience4j
+- **🔁 Retry Pattern**: Automatic retries in inter-service calls
+- **📋 MVC Pattern**: Model-View-Controller architecture in each microservice
+- **📦 DTO Pattern**: Data transfer between layers and services
 
-_Diagrama que muestra la interacción entre todos los microservicios, patrones implementados y flujo de datos_
+### Architecture Diagram
 
-### Servicios Implementados
+![Microservices Architecture](Microservices%20Architecture%20–%20Online%20Appliance%20Store.drawio.png)
 
-| Servicio                  | Puerto | Descripción                             | Base de Datos |
-| ------------------------- | ------ | --------------------------------------- | ------------- |
-| **Config Server**         | 8001   | Gestión centralizada de configuración   | -             |
-| **Eureka Server**         | 8761   | Registro y descubrimiento de servicios  | -             |
-| **API Gateway**           | 8000   | Enrutamiento y balanceado de carga      | -             |
-| **Products Service**      | 8083   | Gestión de productos y stock            | H2            |
-| **Shopping Cart Service** | 8082   | Gestión de carritos de compra           | H2            |
-| **Sales Service**         | 8081   | Procesamiento de ventas y transacciones | H2            |
+_Diagram showing interaction between all microservices, implemented patterns and data flow_
 
-## 🚀 Funcionalidades Principales
+### Implemented Services
+
+| Service                   | Port | Description                              | Database |
+| ------------------------- | ---- | ---------------------------------------- | -------- |
+| **Config Server**         | 8001 | Centralized configuration management     | -        |
+| **Eureka Server**         | 8761 | Service registration and discovery       | -        |
+| **API Gateway**           | 8000 | Routing and load balancing               | -        |
+| **Products Service**      | 8083 | Product and inventory management         | H2       |
+| **Shopping Cart Service** | 8082 | Shopping cart management                 | H2       |
+| **Sales Service**         | 8081 | Sales and transaction processing         | H2       |
+
+## 🚀 Main Features
 
 ### 📱 Products Service
 
-- ✅ Crear, editar y eliminar productos
-- ✅ Buscar productos por ID
-- ✅ Consultar productos con stock bajo (< 5 unidades)
-- ✅ Actualizar precio, stock, nombre y marca
-- ✅ Gestión automática de inventario
+- ✅ Create, edit and delete products
+- ✅ Search products by ID
+- ✅ Query products with low stock (< 5 units)
+- ✅ Update price, stock, name and brand
+- ✅ Automatic inventory management
 
 ### 🛒 Shopping Cart Service
 
-- ✅ Agregar productos al carrito
-- ✅ Gestionar cantidades de productos
-- ✅ Consultar contenido del carrito
-- ✅ Eliminar productos del carrito
-- ✅ Validación de stock antes de agregar productos
+- ✅ Add products to cart
+- ✅ Manage product quantities
+- ✅ Query cart contents
+- ✅ Remove products from cart
+- ✅ Stock validation before adding products
 
 ### 💰 Sales Service
 
-- ✅ Crear nuevas ventas
-- ✅ Consultar ventas existentes
-- ✅ Editar fecha y estado de ventas
-- ✅ **Cancelar ventas** (restablece stock automáticamente)
-- ✅ **No borrado físico** de ventas (auditabilidad)
-- ✅ Integración con Products Service para descuento de stock
-- ✅ Integración con Shopping Cart Service para datos de venta
-- ✅ Manejo de transacciones distribuidas
+- ✅ Create new sales
+- ✅ Query existing sales
+- ✅ Edit sales date and status
+- ✅ **Cancel sales** (automatically restores stock)
+- ✅ **No physical deletion** of sales (auditability)
+- ✅ Integration with Products Service for stock deduction
+- ✅ Integration with Shopping Cart Service for sales data
+- ✅ Distributed transaction handling
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Technologies Used
 
 ### Backend
 
@@ -72,48 +80,42 @@ _Diagrama que muestra la interacción entre todos los microservicios, patrones i
 - **Spring Boot 3.1.3**
 - **Spring Cloud 2022.0.4**
 - **Spring Data JPA**
-- **H2 Database** (En memoria)
-- **OpenFeign** (Comunicación entre servicios)
+- **H2 Database** (In-memory)
+- **OpenFeign** (Inter-service communication)
 - **Netflix Eureka** (Service Discovery)
 - **Spring Cloud Gateway** (API Gateway)
-- **Spring Cloud Config** (Configuración centralizada)
-- **Resilience4j** (Circuit Breaker y Retry)
+- **Spring Cloud Config** (Centralized configuration)
+- **Resilience4j** (Circuit Breaker and Retry)
 
-### Herramientas
+### Tools
 
-- **Maven** (Gestión de dependencias)
-- **Postman** (Testing de APIs)
-- **Postman Collection** (Incluida en el proyecto - `OnlineApplianceStore.postman_collection.json`)
+- **Maven** (Dependency management)
+- **Postman** (API testing)
+- **Postman Collection** (Included in project - `OnlineApplianceStore.postman_collection.json`)
 
-## 📋 Prerrequisitos
+## 🚀 Installation and Execution
 
-- Java 17 o superior
-- Maven 3.6+
-- IDE recomendado: IntelliJ IDEA o Eclipse
-
-## 🚀 Instalación y Ejecución
-
-### 1. Clonar el repositorio
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/CamilaVHeuer/OnlineApplianceStore-MS.git
 cd OnlineApplianceStore-MS
 ```
 
-### 2. Orden de inicio de servicios
+### 2. Service startup order
 
-**⚠️ Importante**: Los servicios deben iniciarse en el siguiente orden:
+**⚠️ Important**: Services must be started in the following order:
 
 ```bash
-# 1. Config Server (Puerto 8001)
+# 1. Config Server (Port 8001)
 cd config-server
 mvn spring-boot:run
 
-# 2. Eureka Server (Puerto 8761)
+# 2. Eureka Server (Port 8761)
 cd ../eureka-sv
 mvn spring-boot:run
 
-# 3. Servicios de negocio
+# 3. Business services
 cd ../products-service
 mvn spring-boot:run
 
@@ -123,231 +125,178 @@ mvn spring-boot:run
 cd ../sales-service
 mvn spring-boot:run
 
-# 4. API Gateway (Puerto 8080)
+# 4. API Gateway (Port 8080)
 cd ../api-gateway
 mvn spring-boot:run
 ```
 
-### 3. Verificar servicios activos
+### 3. Verify active services
 
 - **Eureka Dashboard**: http://localhost:8761
-- **API Gateway**: http://localhost:8080
+- **API Gateway**: http://localhost:8000
 - **Config Server**: http://localhost:8001
-- **H2 Console** (cada servicio):
+- **H2 Console** (each service):
   - Products: http://localhost:8083/h2-console
   - Shopping Cart: http://localhost:8082/h2-console
   - Sales: http://localhost:8081/h2-console
 
-### 4. Importar colección de Postman (Opcional)
+### 4. Import Postman collection (Optional)
 
-Para facilitar las pruebas, importa la colección incluida:
+To facilitate testing, import the included collection:
 
-- Archivo: `OnlineApplianceStore.postman_collection.json`
-- Contiene todos los endpoints con ejemplos de peticiones
+- File: `OnlineApplianceStore.postman_collection.json`
+- Contains all endpoints with request examples
 
 ## � Ejecución con Docker
 
 ### Construcción y Arranque
 
 ```bash
-# Opción 1: Automática (un comando)
+# Option 1: Automatic (single command)
 docker-compose up --build
 
-# Opción 2: Secuencial (más estable)
-# 1. Infraestructura primero:
+# Option 2: Sequential (more stable)
+# 1. Infrastructure first:
 docker-compose up config-server eureka-sv
 
-# 2. Esperar arranque completo, luego microservicios:
+# 2. Wait for complete startup, then microservices:
 docker-compose up products-service shopping-cart-service sales-service api-gateway
 ```
 
-### Puertos Docker
+### Docker Ports
 
-| Servicio         | Puerto Host |
-| ---------------- | ----------- |
-| Config Server    | 8001        |
-| Eureka Server    | 8761        |
-| API Gateway      | 8000        |
-| Products Service | 8083        |
-| Shopping Cart    | 8082        |
-| Sales Service    | 8081        |
+| Service          | Host Port |
+| ---------------- | --------- |
+| Config Server    | 8001      |
+| Eureka Server    | 8761      |
+| API Gateway      | 8000      |
+| Products Service | 8083      |
+| Shopping Cart    | 8082      |
+| Sales Service    | 8081      |
 
-### Verificación Docker
+### Docker Verification
 
-- **Containers**: `docker ps` (6 servicios activos)
+- **Containers**: `docker ps` (6 active services)
 - **Eureka Dashboard**: http://localhost:8761
 - **Config Server**: `curl http://localhost:8001/sales-service/docker`
 
-### Configuración Dual
+### Dual Configuration
 
-- **Local**: Usa `application.yml` con `localhost`
-- **Docker**: Usa `*-docker.yml` con hostnames internos (`eureka-sv`, `config-server`)
+- **Local**: Uses `application.yml` with `localhost`
+- **Docker**: Uses `*-docker.yml` with internal hostnames (`eureka-sv`, `config-server`)
 
-### Comandos Útiles
+### Useful Commands
 
 ```bash
-# Ver logs específicos
+# View specific logs
 docker-compose logs sales-service
 
-# Reiniciar con cambios
+# Restart with changes
 docker-compose down && docker-compose up --build
 
-# Limpiar imágenes del proyecto
+# Clean project images
 docker rmi $(docker images "onlineappliancestore-ms-*" -q)
 ```
 
-> **💡 Tip**: Si hay problemas de conexión, usar arranque secuencial. Los microservicios necesitan que Config Server y Eureka estén completamente listos.
+> **💡 Tip**: If there are connection issues, use sequential startup. Microservices need Config Server and Eureka to be completely ready.
 
 ## �📡 Endpoints de API
 
 ### Products Service (via Gateway: `/products`)
 
 ```http
-GET    /api/products                    # Listar todos los productos
-GET    /api/products/{id}              # Obtener producto por ID
-GET    /api/products/lowstock          # Productos con stock < 5
-POST   /api/products                   # Crear nuevo producto
-PUT    /api/products/{id}              # Actualizar producto
-DELETE /api/products/{id}              # Eliminar producto
-PUT    /api/products/{id}/stock/{quantity}   # Actualizar stock específico
+GET    /api/products                    # List all products
+GET    /api/products/{id}              # Get product by ID
+GET    /api/products/low-stock          # Products with stock < 5
+POST   /api/products                   # Create new product
+PUT    /api/products/{id}              # Update product
+DELETE /api/products/{id}              # Delete product
+
 ```
 
 ### Shopping Cart Service (via Gateway: `/cart`)
 
 ```http
-GET    /api/cart                       # Listar todos los carritos
-GET    /api/cart/{id}                  # Obtener carrito por ID
-POST   /api/cart                       # Crear nuevo carrito
-PUT    /api/cart/{id}                  # Actualizar carrito
-DELETE /api/cart/{id}                  # Eliminar carrito
+GET    /api/cart                       # List all carts
+GET    /api/cart/{id}                  # Get cart by ID
+POST   /api/cart                       # Create new cart
+PUT    /api/cart/{id}                  # Update cart
+DELETE /api/cart/{id}                  # Delete cart
 ```
 
 ### Sales Service (via Gateway: `/sales`)
 
 ```http
-GET    /api/sales                      # Listar todas las ventas
-GET    /api/sales/{id}                 # Obtener venta por ID
-GET    /api/sales/date/{date}          # Obtener ventas por fecha
-POST   /api/sales                      # Crear nueva venta
-PUT    /api/sales/{id}                 # Actualizar venta
-PUT    /api/sales/cancel/{id}          # Cancelar venta (restaura stock)
+GET    /api/sales                      # List all sales
+GET    /api/sales/{id}                 # Get sale by ID
+GET    /api/sales/date/{date}          # Get sales by date
+POST   /api/sales                      # Create new sale
+PUT    /api/sales/{id}                 # Update sale
+PUT    /api/sales/cancel/{id}          # Cancel sale (restores stock)
 ```
 
-## 🗃️ Modelo de Datos
+## 🔄 Business Flow
 
-### Product
+### Complete Sales Process
 
-```json
-{
-  "productId": 1,
-  "name": "Refrigerador Samsung",
-  "brand": "Samsung",
-  "unitPrice": 899.99,
-  "stock": 10
-}
-```
+1. **Create/Query Products** → Products Service
+2. **Add to Cart** → Shopping Cart Service
+3. **Process Sale** → Sales Service
+   - Query cart and products (Shopping Cart Service)
+   - Validate stock availability
+   - Deduct stock (Products Service with Circuit Breaker)
+   - Register the sale
+4. **Cancellation** (if necessary)
+   - Change sale status to "CANCELLING"
+   - **Automatically restore stock** (Products Service)
+   - Update status to "CANCELLED"
 
-### Shopping Cart
+### Fault Tolerance
 
-```json
-{
-  "id": 1,
-  "items": [
-    {
-      "productId": 1,
-      "quantity": 2,
-      "unitPrice": 899.99
-    }
-  ],
-  "totalPrice": 1799.98
-}
-```
+- **Circuit Breaker**: Prevents failure cascades between services
+- **Retry Pattern**: Automatic retries in communication
+- **Fallback Methods**: Default responses in case of failure
+- **Transactional Management**: Consistency in critical operations
 
-### Sale
+### Sales State Management
 
-```json
-{
-  "id": 1,
-  "date": "2026-01-12",
-  "cartId": 1,
-  "totalAmount": 1799.98,
-  "status": "CREATED"
-}
-```
+The system implements state handling similar to **Saga Pattern**:
 
-## 🔄 Flujo de Negocio
+- **CREATED**: Sale created successfully
+- **CANCELLING**: Cancellation process initiated
+- **STOCK_RESTORED**: Stock restored after cancellation
+- **CANCELLED**: Sale cancelled completely
 
-### Proceso de Venta Completo
+## 🧪 Testing with Postman
 
-1. **Crear/Consultar Productos** → Products Service
-2. **Agregar al Carrito** → Shopping Cart Service
-3. **Procesar Venta** → Sales Service
-   - Consulta carrito y productos (Shopping Cart Service)
-   - Valida disponibilidad de stock
-   - Descuenta stock (Products Service con Circuit Breaker)
-   - Registra la venta
-4. **Cancelación** (si es necesario)
-   - Cambia estado de venta a "CANCELLING"
-   - **Restaura stock automáticamente** (Products Service)
-   - Actualiza estado a "CANCELLED"
+### 📁 Included Test Collection
 
-### Tolerancia a Fallos
+The project includes a **complete Postman collection** (`OnlineApplianceStore.postman_collection.json`) with all endpoints configured and usage examples.
 
-- **Circuit Breaker**: Previene cascadas de fallos entre servicios
-- **Retry Pattern**: Reintentos automáticos en comunicación
-- **Fallback Methods**: Respuestas por defecto en caso de fallo
-- **Transactional Management**: Consistencia en operaciones críticas
+#### Import the Collection
 
-### Gestión de Estados de Venta
+1. Open Postman
+2. Click "Import"
+3. Select the file `OnlineApplianceStore.postman_collection.json`
+4. The collection will appear with all requests organized by service
 
-El sistema implementa un manejo de estados similar al **Saga Pattern**:
+### Complete Test Flow
 
-- **CREATED**: Venta creada exitosamente
-- **CANCELLING**: Proceso de cancelación iniciado
-- **STOCK_RESTORED**: Stock restaurado tras cancelación
-- **CANCELLED**: Venta cancelada completamente
-
-## 🧪 Testing con Postman
-
-### 📁 Colección de Pruebas Incluida
-
-El proyecto incluye una **colección completa de Postman** (`OnlineApplianceStore.postman_collection.json`) con todos los endpoints configurados y ejemplos de uso.
-
-#### Importar la Colección
-
-1. Abrir Postman
-2. Click en "Import"
-3. Seleccionar el archivo `OnlineApplianceStore.postman_collection.json`
-4. La colección aparecerá con todas las peticiones organizadas por servicio
-
-#### Variables de Entorno Sugeridas
-
-```json
-{
-  "gateway_url": "http://localhost:8080",
-  "products_port": "8083",
-  "cart_port": "8082",
-  "sales_port": "8081"
-}
-```
-
-### Flujo de Prueba Completo
-
-1. **Crear Productos**
+1. **Create Products**
 
 ```http
 POST http://localhost:8080/api/products
 Content-Type: application/json
 
 {
-  "name": "Refrigerador Samsung",
+  "name": "Refrigerator",
   "brand": "Samsung",
   "unitPrice": 899.99,
   "stock": 10
 }
 ```
 
-2. **Crear Carrito con Productos**
+2. **Create Cart with Products**
 
 ```http
 POST http://localhost:8080/api/cart
@@ -363,7 +312,7 @@ Content-Type: application/json
 }
 ```
 
-3. **Procesar Venta**
+3. **Process Sale**
 
 ```http
 POST http://localhost:8080/api/sales
@@ -375,43 +324,39 @@ Content-Type: application/json
 }
 ```
 
-4. **Cancelar Venta (Opcional)**
+4. **Cancel Sale (Optional)**
 
 ```http
 PUT http://localhost:8080/api/sales/cancel/1
 ```
 
-## 🎯 Próximas Implementaciones
+## 🎯 Future Implementations
 
-- [x] **🐳 Dockerización** de todos los servicios
-- [ ] **🔐 Seguridad** con JWT y OAuth2
-- [ ] **📊 Monitoreo** con Micrometer y Prometheus
-- [ ] **📝 Testing** unitario e integración
-- [ ] **🚀 CI/CD** pipeline con GitHub Actions
-- [ ] **📋 Logging** centralizado con ELK Stack
-- [ ] **🌐 Versionado de APIs** (v1, v2, etc.)
-- [ ] **📱 Frontend** con React o Angular
+- [ ] **🔐 Security** with JWT and OAuth2
+- [ ] **🌐 API Versioning** (v1, v2, etc.)
+- [ ] **📱 Frontend** with React
 
-## 📚 Patrones y Buenas Prácticas Implementadas
+## 📚 Implemented Patterns and Best Practices
 
-### Arquitecturales
+### Architectural
 
-- **Database per Service**: Cada microservicio tiene su propia base de datos H2
-- **API Composition**: Composición de datos desde múltiples servicios
-- **Bulkhead Pattern**: Aislamiento de fallas entre servicios
+- **Database per Service**: Each microservice has its own H2 database
+- **API Composition**: Data composition from multiple services
+- **Bulkhead Pattern**: Failure isolation between services
 
-### Código
+### Code
 
-- **Separation of Concerns**: Separación clara de responsabilidades
-- **Dependency Injection**: Uso de Spring IoC
-- **Exception Handling**: Manejo centralizado de excepciones
-- **Data Transfer Objects**: DTOs para transferencia de datos
+- **Separation of Concerns**: Clear separation of responsibilities
+- **Dependency Injection**: Use of Spring IoC
+- **Exception Handling**: Centralized exception handling
+- **Data Transfer Objects**: DTOs for data transfer between layers and services
 
-## 👨‍💻 Autor
+## Author
 
 **Camila V. Heuer**
 
+- 📧 Email: cbvillalbaheuer@gmail.com
 - GitHub: [@CamilaVHeuer](https://github.com/CamilaVHeuer)
 - LinkedIn: [Camila Heuer](https://linkedin.com/in/camilavheuer)
 
-_Desarrollado con 💙 usando Spring Boot y Spring Cloud_
+_Developed with 💙 using Spring Boot and Spring Cloud_
