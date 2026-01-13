@@ -1,11 +1,9 @@
 # 🏪 Online Appliance Store - Microservices Architecture
 
 <div align="center">
-  <img src="Appliances-log.png" alt="Online Appliance Store" width="## 🐳 Docker Execution
-
-### Build and Startup"/>
+  <img src="./Appliances-log.png" alt="Online Appliance Store Logo" width="400"/>
   
-  <## 📡 API Endpoints><em>E-commerce system developed with microservices architecture</em></p>
+  <p><em>E-commerce system developed with microservices architecture</em></p>
 </div>
 
 ## 📋 Description
@@ -93,7 +91,13 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - **Postman** (API testing)
 - **Postman Collection** (Included in project - `OnlineApplianceStore.postman_collection.json`)
 
-## 🚀 Installation and Execution
+## � Prerequisites
+
+- Java 17 or higher
+- Maven 3.6+
+- Recommended IDE: IntelliJ IDEA or Eclipse
+
+## �🚀 Installation and Execution
 
 ### 1. Clone the repository
 
@@ -235,7 +239,49 @@ PUT    /api/sales/{id}                 # Update sale
 PUT    /api/sales/cancel/{id}          # Cancel sale (restores stock)
 ```
 
-## 🔄 Business Flow
+## �️ Data Models
+
+### Product
+
+```json
+{
+  "productId": 1,
+  "name": "Refrigerator Samsung",
+  "brand": "Samsung", 
+  "unitPrice": 899.99,
+  "stock": 10
+}
+```
+
+### Shopping Cart
+
+```json
+{
+  "id": 1,
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "unitPrice": 899.99
+    }
+  ],
+  "totalPrice": 1799.98
+}
+```
+
+### Sale
+
+```json
+{
+  "id": 1,
+  "date": "2026-01-12",
+  "cartId": 1,
+  "totalAmount": 1799.98,
+  "status": "CREATED"
+}
+```
+
+## �🔄 Business Flow
 
 ### Complete Sales Process
 
