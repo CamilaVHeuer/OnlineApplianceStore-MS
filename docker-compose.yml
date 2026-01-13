@@ -6,6 +6,8 @@ services:
       mem_limit: 512m
       ports:
         - "8001:8001"
+      environment:
+        - SPRING_PROFILES_ACTIVE=docker
       networks:
         - 'appliance-store-network'
 
