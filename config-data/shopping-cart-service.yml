@@ -42,6 +42,10 @@ resilience4j:
         recordExceptions:
           - feign.RetryableException
           - feign.FeignException
+          - feign.FeignException$ServiceUnavailable
+          - feign.FeignException$InternalServerError
+          - feign.FeignException$BadGateway
+          - feign.FeignException$GatewayTimeout
           - java.net.ConnectException
           - java.io.IOException
 
@@ -53,4 +57,8 @@ resilience4j:
         retryExceptions:
           - feign.RetryableException
           - feign.FeignException
+          - feign.FeignException$ServiceUnavailable
+          - feign.FeignException$InternalServerError
+          - feign.FeignException$BadGateway
+          - feign.FeignException$GatewayTimeout
           - java.net.ConnectException
