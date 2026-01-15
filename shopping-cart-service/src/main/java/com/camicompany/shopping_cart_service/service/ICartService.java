@@ -16,5 +16,5 @@ public interface ICartService {
 
     public CartDTO updateCart(Long cartId, CartDTO cartDTO);
 
-
+    public void markCartAsSold(Long cartId);
 }

@@ -7,10 +7,12 @@ import com.camicompany.shopping_cart_service.mapper.Mapper;
 import com.camicompany.shopping_cart_service.model.Cart;
 
 import com.camicompany.shopping_cart_service.model.CartItem;
+import com.camicompany.shopping_cart_service.model.CartStatus;
 import com.camicompany.shopping_cart_service.repository.ICartRepository;
 import com.camicompany.shopping_cart_service.repository.IProductAPI;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -47,15 +49,16 @@ public class CartService implements ICartService {
 
     @Override
     public void deleteCart(Long cartId) {
-        if (!cartRepo.existsById(cartId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found");
+        Cart cart= cartRepo.findById(cartId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+        if (cart.getStatus() == CartStatus.SOLD) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete a sold cart");
         }
         cartRepo.deleteById(cartId);
 
     }
 
     @Override
-
     public CartDTO createCart(CartDTO cartDTO) {
         if (cartDTO == null || cartDTO.getItems() == null || cartDTO.getItems().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart items are required");
@@ -88,6 +91,7 @@ public class CartService implements ICartService {
             items.add(item);
         }
         cart.setItems(items);
+        cart.setStatus(CartStatus.CREATED);
 
         double total = cart.getItems().stream()
                 .mapToDouble(i -> i.getUnitPrice() * i.getQuantity())
@@ -111,13 +115,17 @@ public class CartService implements ICartService {
     }
 
     @Override
-
     public CartDTO updateCart(Long cartId, CartDTO cartDTO) {
         if (cartDTO == null || cartDTO.getItems() == null || cartDTO.getItems().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart items are required");
         }
         Cart cart = cartRepo.findById(cartId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+
+        if (cart.getStatus() == CartStatus.SOLD) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot update a sold cart");
+        }
+
         List<CartItem> updatedItems = new ArrayList<>();
 
         for (CartItemDTO itemDTO : cartDTO.getItems()) {
@@ -159,6 +167,19 @@ public class CartService implements ICartService {
 
         Cart savedCart = cartRepo.save(cart);
         return Mapper.toDTO(savedCart);
+    }
+
+    @Override
+    public void markCartAsSold(Long cartId) {
+        Cart cart = cartRepo.findById(cartId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+
+        if (cart.getStatus() == CartStatus.SOLD) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart is already sold");
+        }
+
+        cart.setStatus(CartStatus.SOLD);
+        cartRepo.save(cart);
     }
 
 }

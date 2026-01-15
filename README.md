@@ -56,8 +56,13 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - ✅ Add products to cart
 - ✅ Manage product quantities
 - ✅ Query cart contents
-- ✅ Remove products from cart
+- ✅ Remove products from cart *(only if the cart is not marked as SOLD)*
 - ✅ Stock validation before adding products
+- ✅ **Cart status management**:
+  - Each cart has a status (`CREATED`, `SOLD`)
+  - When a sale is created, the cart status is set to `SOLD`
+  - A cart can only be deleted if its status is not `SOLD`
+  - If you try to update a cart with status `SOLD`, the service will return a `409 Conflict` error
 
 ### 💰 Sales Service
 

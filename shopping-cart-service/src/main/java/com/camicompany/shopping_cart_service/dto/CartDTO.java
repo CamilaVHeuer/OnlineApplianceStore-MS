@@ -1,5 +1,6 @@
 package com.camicompany.shopping_cart_service.dto;
 
+import com.camicompany.shopping_cart_service.model.CartStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -17,4 +18,6 @@ public class CartDTO {
     private Double totalPrice;
     @Schema(description = "List of items in the cart")
     private List<CartItemDTO> items;
+    @Schema(description = "Status of the cart", example = "CREATED", accessMode = Schema.AccessMode.READ_ONLY)
+    private CartStatus status;
 }

@@ -24,6 +24,8 @@ import java.util.List;
 
 @Service
 public class SaleService implements ISaleService {
+    public static final String CART_STATUS_CREATED = "CREATED";
+    public static final String CART_STATUS_SOLD = "SOLD";
 
     @Autowired
     private ISaleRepository saleRepo;
@@ -70,17 +72,22 @@ public class SaleService implements ISaleService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CartId is required");}
 
         Sale sale = new Sale();
-        CartDTO car = self.getCartSafe(saleDTO.getCartId());
+        CartDTO cart = self.getCartSafe(saleDTO.getCartId());
+        if(!CART_STATUS_CREATED.equals(cart.getStatus())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart is already sold");}
 
-        for (CartItemDTO item : car.getItems()) {
+        self.markCartAsSold(cart.getId());
+
+        for (CartItemDTO item : cart.getItems()) {
             // Check stock and decrease
             self.decreaseStockSafe(item.getProductId(), item.getQuantity());
         }
 
         sale.setDate(saleDTO.getDate());
-        sale.setCartId(car.getId());
-        sale.setTotalAmount(car.getTotalPrice());
+        sale.setCartId(cart.getId());
+        sale.setTotalAmount(cart.getTotalPrice());
         sale.setStatus(SaleStatus.CREATED);
+
         return Mapper.toDTO(saleRepo.save(sale));
     }
 
@@ -96,12 +103,23 @@ public class SaleService implements ISaleService {
         return cartAPI.getCartById(cartId);
     }
 
+    @Retry(name = "shopping-cart-service")
+    @CircuitBreaker(name = "shopping-cart-service", fallbackMethod = "fallbackMarkCartAsSold")
+    public void markCartAsSold(Long cartId) {
+        cartAPI.markCartAsSold(cartId);
+    }
+
     public void fallbackdecreaseStock(Long productId, Integer quantity, Throwable t) {
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                 "Product service is unavailable. Please try again later.");
     }
 
     public CartDTO fallbackgetCart(Long cartId, Throwable t) {
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "Shopping Cart service is unavailable. Please try again later.");
+    }
+
+    public void fallbackMarkCartAsSold(Long cartId, Throwable t) {
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                 "Shopping Cart service is unavailable. Please try again later.");
     }

@@ -2,6 +2,7 @@ package com.camicompany.shopping_cart_service.controller;
 
 import com.camicompany.shopping_cart_service.dto.CartDTO;
 import com.camicompany.shopping_cart_service.service.ICartService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -59,7 +60,8 @@ public class CartController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Cart deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Cart not found")
+            @ApiResponse(responseCode = "404", description = "Cart not found"),
+            @ApiResponse(responseCode = "409", description = "Cannot delete a sold cart")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCart(@PathVariable("id")  Long cartId) {
@@ -72,11 +74,19 @@ public class CartController {
             @ApiResponse(responseCode = "200", description = "Cart updated successfully"),
             @ApiResponse(responseCode = "404", description = "Cart not found"),
             @ApiResponse(responseCode = "400", description = "Invalid cart data provided"),
+            @ApiResponse(responseCode = "409", description = "Cannot update a sold cart"),
             @ApiResponse(responseCode = "503", description = "Product service is unavailable")
     })
     @PutMapping("/{id}")
     public ResponseEntity<CartDTO> updateCart(@PathVariable("id") Long cartId, @RequestBody CartDTO cartDTO) {
         return ResponseEntity.ok(cartServ.updateCart(cartId, cartDTO));
+    }
+
+    @Hidden
+    @PutMapping("/mark-as-sold/{id}")
+    public ResponseEntity<Void> markCartAsSold(@PathVariable("id") Long cartId) {
+        cartServ.markCartAsSold(cartId);
+        return ResponseEntity.noContent().build();
     }
 
 }
