@@ -3,6 +3,7 @@ package com.camicompany.sales_service.service;
 import com.camicompany.sales_service.dto.CartDTO;
 import com.camicompany.sales_service.dto.CartItemDTO;
 import com.camicompany.sales_service.dto.SaleDTO;
+import com.camicompany.sales_service.dto.SaleDateDTO;
 import com.camicompany.sales_service.mapper.Mapper;
 import com.camicompany.sales_service.model.Sale;
 import com.camicompany.sales_service.model.SaleStatus;
@@ -12,8 +13,8 @@ import com.camicompany.sales_service.repository.ISaleRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +33,10 @@ public class SaleService implements ISaleService {
 
     @Autowired
     private IProductAPI prodAPI;
+
+    @Autowired
+    @Lazy
+    private SaleService self;
 
     @Override
     public List<SaleDTO> getAllSales() {
@@ -53,23 +58,23 @@ public class SaleService implements ISaleService {
 
     @Override
     public SaleDTO createSale(SaleDTO saleDTO) {
-        if (saleDTO == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale data is required");
+        if (saleDTO == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale data is required");}
         if (saleDTO.getDate() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date is required");
         }
         if (saleDTO.getDate().isAfter(LocalDate.now())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date cannot be in the future");
         }
-        if (saleDTO.getCartId() == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CartId is required");
+        if (saleDTO.getCartId() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CartId is required");}
 
         Sale sale = new Sale();
-        CartDTO car = getCartSafe(saleDTO.getCartId());
+        CartDTO car = self.getCartSafe(saleDTO.getCartId());
 
         for (CartItemDTO item : car.getItems()) {
-            // llamar al servicio de productos para descontar el stock
-            decreaseStockSafe(item.getProductId(), item.getQuantity());
+            // Check stock and decrease
+            self.decreaseStockSafe(item.getProductId(), item.getQuantity());
         }
 
         sale.setDate(saleDTO.getDate());
@@ -102,18 +107,18 @@ public class SaleService implements ISaleService {
     }
 
     @Override
-    public SaleDTO updateSale(Long saleId, SaleDTO saleDTO) {
-        if (saleDTO == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale data is required");
+    public SaleDTO updateSale(Long saleId, SaleDateDTO saleDateDTO) {
+        if (saleDateDTO == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale data is required");}
         Sale existingSale = saleRepo.findById(saleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sale not found"));
-        if (saleDTO.getDate() == null) {
+        if (saleDateDTO.getDate() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date is required");
         }
-        if (saleDTO.getDate().isAfter(LocalDate.now())) {
+        if (saleDateDTO.getDate().isAfter(LocalDate.now())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date cannot be in the future");
         }
-        existingSale.setDate(saleDTO.getDate());
+        existingSale.setDate(saleDateDTO.getDate());
         return Mapper.toDTO(saleRepo.save(existingSale));
 
     }
@@ -137,9 +142,9 @@ public class SaleService implements ISaleService {
             saleRepo.save(sale);
         }
 
-        CartDTO car = getCartSafe(sale.getCartId());
+        CartDTO car = self.getCartSafe(sale.getCartId());
         for (CartItemDTO item : car.getItems()) {
-            restoreStockSafe(item.getProductId(), item.getQuantity());
+            self.restoreStockSafe(item.getProductId(), item.getQuantity());
         }
         sale.setStatus(SaleStatus.STOCK_RESTORED);
         saleRepo.save(sale);
