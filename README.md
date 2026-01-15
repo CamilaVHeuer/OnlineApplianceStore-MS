@@ -80,6 +80,9 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - ✅ **Unified testing** with fault tolerance
 - ✅ **Production-ready** routing
 
+> **⚠️ Note:**
+> When using the centralized Swagger UI at [http://localhost:8000/swagger-ui.html](http://localhost:8000/swagger-ui.html), make sure to manually select the `http://localhost:8000` server in the "Servers" dropdown for each service. By default, Swagger may select the direct service URL (e.g., `http://localhost:8083`), which will not work for API Gateway requests. Always choose the API Gateway server (`:8000`) to test through the gateway.
+
 ### 🔧 Individual Service Documentation
 
 | Service | Direct Swagger URL |
