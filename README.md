@@ -32,14 +32,14 @@ _Diagram showing interaction between all microservices, implemented patterns and
 
 ### Implemented Services
 
-| Service                   | Port | Description                              | Database |
-| ------------------------- | ---- | ---------------------------------------- | -------- |
-| **Config Server**         | 8001 | Centralized configuration management     | -        |
-| **Eureka Server**         | 8761 | Service registration and discovery       | -        |
-| **API Gateway**           | 8000 | Routing and load balancing               | -        |
-| **Products Service**      | 8083 | Product and inventory management         | H2       |
-| **Shopping Cart Service** | 8082 | Shopping cart management                 | H2       |
-| **Sales Service**         | 8081 | Sales and transaction processing         | H2       |
+| Service                   | Port | Swagger UI | Description                              | Database |
+| ------------------------- | ---- | ---------- | ---------------------------------------- | -------- |
+| **Config Server**         | 8001 | -          | Centralized configuration management     | -        |
+| **Eureka Server**         | 8761 | -          | Service registration and discovery       | -        |
+| **API Gateway**           | 8000 | [📚 Docs](http://localhost:8000/swagger-ui.html) | Routing, load balancing & unified docs   | -        |
+| **Products Service**      | 8083 | [📚 Docs](http://localhost:8083/swagger-ui.html) | Product and inventory management         | H2       |
+| **Shopping Cart Service** | 8082 | [📚 Docs](http://localhost:8082/swagger-ui.html) | Shopping cart management                 | H2       |
+| **Sales Service**         | 8081 | [📚 Docs](http://localhost:8081/swagger-ui.html) | Sales and transaction processing         | H2       |
 
 ## 🚀 Main Features
 
@@ -70,7 +70,37 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - ✅ Integration with Shopping Cart Service for sales data
 - ✅ Distributed transaction handling
 
-## 🛠️ Technologies Used
+## � API Documentation
+
+### 🌐 Centralized Documentation (Recommended)
+
+**📍 Access all services through API Gateway**: http://localhost:8000/swagger-ui.html
+
+- ✅ **Service dropdown** (Products, Shopping Cart, Sales)
+- ✅ **Unified testing** with fault tolerance
+- ✅ **Production-ready** routing
+
+### 🔧 Individual Service Documentation
+
+| Service | Direct Swagger URL |
+|---------|-------------------|
+| **Products Service** | http://localhost:8083/swagger-ui.html |
+| **Shopping Cart Service** | http://localhost:8082/swagger-ui.html |
+| **Sales Service** | http://localhost:8081/swagger-ui.html |
+
+### 🎯 Testing Recommendations
+
+- **Development**: Use individual Swagger UIs for rapid testing
+- **Integration**: Use Gateway Swagger for complete workflow and Circuit Breaker testing
+
+### 🛡️ Fault Tolerance Testing
+
+Test **Circuit Breaker** through Gateway:
+1. Stop a service (e.g., Products Service)
+2. Try creating a sale → Observe **503 Service Unavailable**
+3. Restart service → Automatic recovery
+
+## �🛠️ Technologies Used
 
 ### Backend
 

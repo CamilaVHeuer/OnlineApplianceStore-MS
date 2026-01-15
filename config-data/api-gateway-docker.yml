@@ -8,6 +8,20 @@ spring:
           enabled: true
           lower-case-service-id: true
 
+# Swagger configuration for the Gateway
+springdoc:
+  swagger-ui:
+    urls:
+      - url: /products-service/v3/api-docs
+        name: Products Service
+        primary: true
+      - url: /shopping-cart-service/v3/api-docs
+        name: Shopping Cart Service
+      - url: /sales-service/v3/api-docs
+        name: Sales Service
+  api-docs:
+    enabled: true
+
 server:
   port: 8000
 
@@ -15,5 +29,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka-sv:8761/eureka
-
-
