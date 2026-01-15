@@ -28,7 +28,7 @@ public class OpenApiConfig {
                                 .url("http://localhost:8082")
                                 .description("Shopping Cart Service - Local"),
                         new Server()
-                                .url("http://localhost:8000/sales-service")
+                                .url("http://localhost:8000/shopping-cart-service")
                                 .description("API Gateway")
                 ));
     }
