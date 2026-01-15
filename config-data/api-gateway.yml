@@ -5,7 +5,7 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: false # Disable automatic routes
           lower-case-service-id: true
 
 # Swagger configuration for the Gateway
@@ -24,3 +24,8 @@ springdoc:
 
 server:
   port: 8000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
