@@ -21,5 +21,8 @@ public class Cart {
     private Double totalPrice;
     @OneToMany (mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CartStatus status = CartStatus.CREATED;
 
 }

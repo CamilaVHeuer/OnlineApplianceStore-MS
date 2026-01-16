@@ -32,6 +32,7 @@ public class Mapper {
                 id(c.getId()).
                 totalPrice(c.getTotalPrice())
                 .items(itemDTO)
+                .status(c.getStatus())
                 .build();
 
     }
