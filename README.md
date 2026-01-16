@@ -45,11 +45,16 @@ _Diagram showing interaction between all microservices, implemented patterns and
 
 ### 📱 Products Service
 
-- ✅ Create, edit and delete products
+- ✅ Create, edit and update products
 - ✅ Search products by ID
 - ✅ Query products with low stock (< 5 units)
 - ✅ Update price, stock, name and brand
 - ✅ Automatic inventory management
+- ✅ **Product status management**:
+  - Products have states: `ACTIVE` and `DISCONTINUED`
+  - Products cannot be physically deleted
+  - To discontinue a product, use the PUT method to change its status to `DISCONTINUED`
+  - When creating a cart, the service checks the product status; products marked as `DISCONTINUED` cannot be added to the cart
 
 ### 🛒 Shopping Cart Service
 
@@ -76,8 +81,13 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - ✅ Distributed transaction handling
 
 > **Design inspiration from nuclear safety engineering:**
-> 
-> This project incorporates lessons learned from my experience working in a nuclear reactor ☢️. In nuclear systems, critical components are governed by explicit state machines (like the Reactor Protection System) to ensure only valid and safe transitions. Inspired by this, the Shopping Cart Service now enforces strict state management (`CREATED`, `SOLD`), preventing modifications or deletions once a sale is completed. This approach ensures data consistency and reliability in distributed systems—just as state control is essential for safety in nuclear engineering, it is also key for robust microservices.
+>
+> This project incorporates lessons learned from my experience working in a nuclear reactor ☢️. In nuclear systems, critical components are governed by explicit state machines (like the Reactor Protection System) to ensure only valid and safe transitions. Inspired by this, both the Products Service and the Shopping Cart Service enforce strict state management:
+>
+> - **Products Service:** Products have explicit states (`ACTIVE`, `DISCONTINUED`). Products cannot be physically deleted; instead, they are marked as discontinued using a dedicated endpoint. Only products with `ACTIVE` status can be added to carts, ensuring inventory consistency and preventing invalid operations.
+> - **Shopping Cart Service:** Carts have states (`CREATED`, `SOLD`). Once a sale is completed, the cart is marked as `SOLD` and cannot be modified or deleted, guaranteeing transactional integrity and auditability.
+>
+> This approach ensures data consistency and reliability in distributed systems—just as state control is essential for safety in nuclear engineering, it is also key for robust microservices.
 
 ## � API Documentation
 
@@ -252,12 +262,12 @@ docker rmi $(docker images "onlineappliancestore-ms-*" -q)
 
 ```http
 GET    /api/products                    # List all products
-GET    /api/products/{id}              # Get product by ID
+GET    /api/products/{id}               # Get product by ID
 GET    /api/products/low-stock          # Products with stock < 5
-POST   /api/products                   # Create new product
-PUT    /api/products/{id}              # Update product
-DELETE /api/products/{id}              # Delete product
-
+POST   /api/products                    # Create new product (default state: ACTIVE)
+PUT    /api/products/{id}               # Update product (name, brand, price, stock)
+PUT    /api/products/{id}/discontinue   # Discontinue product (sets status to DISCONTINUED)
+DELETE /api/products/{id}               # Logical delete (not physical)
 ```
 
 ### Shopping Cart Service (via Gateway: `/cart`)

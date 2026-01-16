@@ -12,4 +12,5 @@ public class ProductDTO {
     private Long productId;
     private Double unitPrice;
     private Integer stock;
+    private String status;
 }

@@ -1,5 +1,6 @@
 package com.camicompany.products_service.dto;
 
+import com.camicompany.products_service.model.ProductStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import lombok.*;
@@ -22,4 +23,6 @@ public class ProductDTO {
     private Double unitPrice;
     @Schema(example = "50")
     private Integer stock;
+    @Schema(description = "Status of product (lifecycle", example = "ACTIVE", accessMode = Schema.AccessMode.READ_ONLY)
+    private ProductStatus status;
 }
