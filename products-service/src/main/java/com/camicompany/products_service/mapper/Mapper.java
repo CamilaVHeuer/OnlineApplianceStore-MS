@@ -17,6 +17,7 @@ public class Mapper {
                 brand(p.getBrand()).
                 unitPrice(p.getUnitPrice()).
                 stock(p.getStock()).
+                status(p.getStatus()).
                 build();
     }
 }

@@ -16,7 +16,7 @@ public interface IProductService {
 
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO);
 
-    public void deleteProduct(Long productId);
+    public ProductDTO discontinueProduct(Long productId);
 
     public List<ProductDTO> getProductsLowStock();
 

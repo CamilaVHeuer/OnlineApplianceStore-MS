@@ -3,6 +3,7 @@ package com.camicompany.products_service.service;
 import com.camicompany.products_service.dto.ProductDTO;
 import com.camicompany.products_service.mapper.Mapper;
 import com.camicompany.products_service.model.Product;
+import com.camicompany.products_service.model.ProductStatus;
 import com.camicompany.products_service.repository.IProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,7 @@ public class ProductService implements IProductService {
                 .brand(productDTO.getBrand())
                 .unitPrice(productDTO.getUnitPrice())
                 .stock(productDTO.getStock())
+                .status(ProductStatus.ACTIVE)
                 .build();
         Product savedProduct = prodRepo.save(product);
         return Mapper.toDTO(savedProduct);
@@ -83,6 +85,9 @@ public class ProductService implements IProductService {
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
         Product existingProduct = prodRepo.findById(productId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        if(existingProduct.getStatus()== ProductStatus.DISCONTINUED){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot update a discontinued product");
+        }
 
         String newCode = productDTO.getCode();
 
@@ -117,11 +122,15 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public void deleteProduct(Long productId) {
-        if(!prodRepo.existsById(productId)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+    public ProductDTO discontinueProduct(Long productId) {
+
+        Product prod = prodRepo.findById(productId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        if (prod.getStatus() == ProductStatus.DISCONTINUED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product is already discontinued");
         }
-        prodRepo.deleteById(productId);
+            prod.setStatus(ProductStatus.DISCONTINUED);
+            return Mapper.toDTO(prodRepo.save(prod));
 
     }
 

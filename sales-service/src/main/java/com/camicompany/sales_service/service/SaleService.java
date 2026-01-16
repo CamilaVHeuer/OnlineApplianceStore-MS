@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 public class SaleService implements ISaleService {
     public static final String CART_STATUS_CREATED = "CREATED";
-    public static final String CART_STATUS_SOLD = "SOLD";
+
 
     @Autowired
     private ISaleRepository saleRepo;

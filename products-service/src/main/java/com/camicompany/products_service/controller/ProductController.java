@@ -98,17 +98,18 @@ public class ProductController {
     }
 
     @Operation(
-            summary = "Delete a product",
-            description = "Deletes a product by its ID"
+            summary = "Discontinue a product",
+            description = "Discontinue a product by its ID"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Product deleted"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "200", description = "Product discontinued"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode= "409", description = "Product already discontinued")
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        prodServ.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/discontinue/{id}")
+    public ResponseEntity<ProductDTO> discontinueProduct(@PathVariable Long id) {
+        return ResponseEntity.ok().body(prodServ.discontinueProduct(id));
+
     }
 
     @Hidden

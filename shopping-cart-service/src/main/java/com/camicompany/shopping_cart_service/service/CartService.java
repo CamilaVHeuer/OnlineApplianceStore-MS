@@ -25,6 +25,8 @@ import java.util.List;
 @Service
 public class CartService implements ICartService {
 
+    public static final String PRODUCT_STATUS_ACTIVE = "ACTIVE";
+
     @Autowired
     private ICartRepository cartRepo;
 
@@ -76,6 +78,9 @@ public class CartService implements ICartService {
             }
 
             ProductDTO product = self.getProductById(itemDTO.getProductId());
+            if(!PRODUCT_STATUS_ACTIVE.equals(product.getStatus())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "product is not active and cannot be added to cart. Product ID: " + itemDTO.getProductId());
+            }
 
             if (product.getStock() < itemDTO.getQuantity()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -138,6 +143,9 @@ public class CartService implements ICartService {
             }
 
             ProductDTO product = self.getProductById(itemDTO.getProductId());
+            if(!PRODUCT_STATUS_ACTIVE.equals(product.getStatus())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "product is not active and cannot be added to cart. Product ID: " + itemDTO.getProductId());
+            }
 
             if (product.getStock() < itemDTO.getQuantity()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

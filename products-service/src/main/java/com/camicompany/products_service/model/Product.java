@@ -18,4 +18,5 @@ public class Product {
     private String brand;
     private Double unitPrice;
     private Integer stock;
+    private ProductStatus status = ProductStatus.ACTIVE;
 }
