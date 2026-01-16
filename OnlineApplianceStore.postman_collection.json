@@ -131,10 +131,10 @@
 				{
 					"name": "Product ",
 					"request": {
-						"method": "DELETE",
+						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/products/1",
+							"raw": "localhost:8083/api/products/discontinue/1",
 							"host": [
 								"localhost"
 							],
@@ -142,6 +142,7 @@
 							"path": [
 								"api",
 								"products",
+								"discontinue",
 								"1"
 							]
 						}
@@ -565,10 +566,10 @@
 						{
 							"name": "Product ",
 							"request": {
-								"method": "DELETE",
+								"method": "PUT",
 								"header": [],
 								"url": {
-									"raw": "localhost:8000/product-service/api/products/1",
+									"raw": "localhost:8000/product-service/api/products/discontinue/1",
 									"host": [
 										"localhost"
 									],
@@ -577,6 +578,7 @@
 										"product-service",
 										"api",
 										"products",
+										"discontinue",
 										"1"
 									]
 								}
