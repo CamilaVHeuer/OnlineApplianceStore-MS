@@ -75,6 +75,10 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - ✅ Integration with Shopping Cart Service for sales data
 - ✅ Distributed transaction handling
 
+> **Design inspiration from nuclear safety engineering:**
+> 
+> This project incorporates lessons learned from my experience working in a nuclear reactor ☢️. In nuclear systems, critical components are governed by explicit state machines (like the Reactor Protection System) to ensure only valid and safe transitions. Inspired by this, the Shopping Cart Service now enforces strict state management (`CREATED`, `SOLD`), preventing modifications or deletions once a sale is completed. This approach ensures data consistency and reliability in distributed systems—just as state control is essential for safety in nuclear engineering, it is also key for robust microservices.
+
 ## � API Documentation
 
 ### 🌐 Centralized Documentation (Recommended)
