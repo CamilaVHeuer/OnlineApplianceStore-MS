@@ -90,7 +90,7 @@ public class ProductController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Product updated"),
             @ApiResponse(responseCode = "404", description = "Product not found"),
-            @ApiResponse(responseCode= "409", description = "Product code already exists")
+            @ApiResponse(responseCode= "409", description = "Product code already exists or product is discontinued")
     })
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
