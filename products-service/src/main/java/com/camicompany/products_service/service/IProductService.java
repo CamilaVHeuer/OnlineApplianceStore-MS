@@ -18,6 +18,8 @@ public interface IProductService {
 
     public ProductDTO discontinueProduct(Long productId);
 
+    public ProductDTO activateProduct(Long productId);
+
     public List<ProductDTO> getProductsLowStock();
 
     public ProductDTO decreaseProductStock(Long productId, Integer quantity);

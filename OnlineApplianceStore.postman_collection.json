@@ -150,6 +150,27 @@
 					"response": []
 				},
 				{
+					"name": "Product ",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8083/api/products/activate/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"products",
+								"activate",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Product All",
 					"request": {
 						"method": "GET",
@@ -579,6 +600,28 @@
 										"api",
 										"products",
 										"discontinue",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Product ",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/product-service/api/products/activate/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"product-service",
+										"api",
+										"products",
+										"activate",
 										"1"
 									]
 								}

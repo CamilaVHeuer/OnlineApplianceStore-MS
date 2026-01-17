@@ -135,6 +135,17 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public ProductDTO activateProduct(Long productId) {
+        Product prod = prodRepo.findById(productId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        if (prod.getStatus() == ProductStatus.ACTIVE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product is already active");
+        }
+        prod.setStatus(ProductStatus.ACTIVE);
+        return Mapper.toDTO(prodRepo.save(prod));
+    }
+
+    @Override
     public List<ProductDTO> getProductsLowStock() {
 
         return prodRepo.findByStockLessThanEqual(5).stream().map(Mapper::toDTO).toList();

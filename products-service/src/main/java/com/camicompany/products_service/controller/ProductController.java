@@ -112,6 +112,20 @@ public class ProductController {
 
     }
 
+    @Operation(
+            summary = "Activate a product",
+            description = "Activate a discontinued product by its ID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Product activated"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode= "409", description = "Product is already active")
+    })
+    @PutMapping("/activate/{id}")
+    public ResponseEntity<ProductDTO> activateProduct(@PathVariable Long id) {
+        return ResponseEntity.ok().body(prodServ.activateProduct(id));
+    }
+
     @Hidden
     @PutMapping("/decrease-stock/{id}")
     public ResponseEntity<ProductDTO> decreaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {

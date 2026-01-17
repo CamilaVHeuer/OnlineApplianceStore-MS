@@ -54,6 +54,7 @@ _Diagram showing interaction between all microservices, implemented patterns and
   - Products have states: `ACTIVE` and `DISCONTINUED`
   - Products cannot be physically deleted
   - To discontinue a product, use the PUT method to change its status to `DISCONTINUED`
+  - To reactivate a discontinued product, use the PUT method to change its status back to `ACTIVE`
   - When creating a cart, the service checks the product status; products marked as `DISCONTINUED` cannot be added to the cart
 
 ### 🛒 Shopping Cart Service
@@ -267,6 +268,7 @@ GET    /api/products/low-stock          # Products with stock < 5
 POST   /api/products                    # Create new product (default state: ACTIVE)
 PUT    /api/products/{id}               # Update product (name, brand, price, stock)
 PUT    /api/products/{id}/discontinue   # Discontinue product (sets status to DISCONTINUED)
+PUT    /api/products/{id}/activate    # Reactivate product (sets status to ACTIVE)
 DELETE /api/products/{id}               # Logical delete (not physical)
 ```
 
