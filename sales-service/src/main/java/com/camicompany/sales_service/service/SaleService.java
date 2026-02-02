@@ -1,9 +1,6 @@
 package com.camicompany.sales_service.service;
 
-import com.camicompany.sales_service.dto.CartDTO;
-import com.camicompany.sales_service.dto.CartItemDTO;
-import com.camicompany.sales_service.dto.SaleDTO;
-import com.camicompany.sales_service.dto.SaleDateDTO;
+import com.camicompany.sales_service.dto.*;
 import com.camicompany.sales_service.mapper.Mapper;
 import com.camicompany.sales_service.model.Sale;
 import com.camicompany.sales_service.model.SaleStatus;
@@ -41,64 +38,53 @@ public class SaleService implements ISaleService {
     private SaleService self;
 
     @Override
-    public List<SaleDTO> getAllSales() {
+    public List<SaleResponseDTO> getAllSales() {
         return saleRepo.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public SaleDTO getSaleById(Long saleId) {
-        Sale sale = saleRepo.findById(saleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sale not found"));
+    public SaleResponseDTO getSaleById(Long saleId) {
+        Sale sale = findSaleOrThrow(saleId);
         return Mapper.toDTO(sale);
     }
 
 
     @Override
-    public List<SaleDTO> getSalesByDate(LocalDate date) {
+    public List<SaleResponseDTO> getSalesByDate(LocalDate date) {
         return saleRepo.findByDate(date).stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public SaleDTO createSale(SaleDTO saleDTO) {
-        if (saleDTO == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale data is required");}
-        if (saleDTO.getDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date is required");
-        }
-        if (saleDTO.getDate().isAfter(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date cannot be in the future");
-        }
-        if (saleDTO.getCartId() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CartId is required");}
+    public SaleResponseDTO createSale(CreateSaleDTO createSaleDTO) {
 
         Sale sale = new Sale();
-        CartDTO cart = self.getCartSafe(saleDTO.getCartId());
-        if(!CART_STATUS_CREATED.equals(cart.getStatus())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart is already sold");}
+        CartDTO cart = self.getCartSafe(createSaleDTO.cartId());
+        if(!CART_STATUS_CREATED.equals(cart.status())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart is not available for sale");}
 
-        self.markCartAsSold(cart.getId());
+        self.markCartAsSold(cart.id());
 
-        for (CartItemDTO item : cart.getItems()) {
+        for (CartItemDTO item : cart.items()) {
             // Check stock and decrease
-            self.decreaseStockSafe(item.getProductId(), item.getQuantity());
+            self.decreaseStockSafe(item.productId(), item.quantity());
         }
 
-        sale.setDate(saleDTO.getDate());
-        sale.setCartId(cart.getId());
-        sale.setTotalAmount(cart.getTotalPrice());
+        sale.setDate(createSaleDTO.date());
+        sale.setCartId(cart.id());
+        sale.setTotalAmount(cart.totalPrice());
         sale.setStatus(SaleStatus.CREATED);
 
         return Mapper.toDTO(saleRepo.save(sale));
     }
 
     @Retry(name = "products-service")
-    @CircuitBreaker(name = "products-service", fallbackMethod = "fallbackdecreaseStock")
+    @CircuitBreaker(name = "products-service", fallbackMethod = "fallbackDecreaseStock")
     public void decreaseStockSafe(Long productId, Integer quantity) {
         prodAPI.decreaseStock(productId, quantity);
     }
 
     @Retry(name = "shopping-cart-service")
-    @CircuitBreaker(name = "shopping-cart-service", fallbackMethod = "fallbackgetCart")
+    @CircuitBreaker(name = "shopping-cart-service", fallbackMethod = "fallbackGetCart")
     public CartDTO getCartSafe(Long cartId) {
         return cartAPI.getCartById(cartId);
     }
@@ -109,12 +95,12 @@ public class SaleService implements ISaleService {
         cartAPI.markCartAsSold(cartId);
     }
 
-    public void fallbackdecreaseStock(Long productId, Integer quantity, Throwable t) {
+    public void fallbackDecreaseStock(Long productId, Integer quantity, Throwable t) {
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                 "Product service is unavailable. Please try again later.");
     }
 
-    public CartDTO fallbackgetCart(Long cartId, Throwable t) {
+    public CartDTO fallbackGetCart(Long cartId, Throwable t) {
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                 "Shopping Cart service is unavailable. Please try again later.");
     }
@@ -125,27 +111,17 @@ public class SaleService implements ISaleService {
     }
 
     @Override
-    public SaleDTO updateSale(Long saleId, SaleDateDTO saleDateDTO) {
-        if (saleDateDTO == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale data is required");}
-        Sale existingSale = saleRepo.findById(saleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sale not found"));
-        if (saleDateDTO.getDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date is required");
-        }
-        if (saleDateDTO.getDate().isAfter(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sale date cannot be in the future");
-        }
-        existingSale.setDate(saleDateDTO.getDate());
+    public SaleResponseDTO updateSale(Long saleId, SaleDateDTO saleDateDTO) {
+        Sale existingSale = findSaleOrThrow(saleId);
+        existingSale.setDate(saleDateDTO.date());
         return Mapper.toDTO(saleRepo.save(existingSale));
 
     }
 
     @Transactional
     @Override
-    public SaleDTO cancelSale(Long saleId) {
-        Sale sale = saleRepo.findById(saleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sale not found"));
+    public SaleResponseDTO cancelSale(Long saleId) {
+        Sale sale = findSaleOrThrow(saleId);
         if (sale.getStatus() == SaleStatus.CANCELLED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Sale is already cancelled");
         }
@@ -161,8 +137,8 @@ public class SaleService implements ISaleService {
         }
 
         CartDTO car = self.getCartSafe(sale.getCartId());
-        for (CartItemDTO item : car.getItems()) {
-            self.restoreStockSafe(item.getProductId(), item.getQuantity());
+        for (CartItemDTO item : car.items()) {
+            self.restoreStockSafe(item.productId(), item.quantity());
         }
         sale.setStatus(SaleStatus.STOCK_RESTORED);
         saleRepo.save(sale);
@@ -172,14 +148,21 @@ public class SaleService implements ISaleService {
     }
 
     @Retry(name = "products-service")
-    @CircuitBreaker(name = "products-service", fallbackMethod = "fallbackrestoreStock")
+    @CircuitBreaker(name = "products-service", fallbackMethod = "fallbackRestoreStock")
     public void restoreStockSafe(Long productId, Integer quantity) {
         prodAPI.restoreStock(productId, quantity);
     }
 
-    public void fallbackrestoreStock(Long productId, Integer quantity, Throwable t) {
+    public void fallbackRestoreStock(Long productId, Integer quantity, Throwable t) {
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                 "Unable to cancel sale because product service is unavailable");
+    }
+
+    //Helpers methods
+    private Sale findSaleOrThrow(Long saleId) {
+        return saleRepo.findById(saleId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Sale not found"));
     }
 
 }

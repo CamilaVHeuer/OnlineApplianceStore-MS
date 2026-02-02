@@ -1,30 +1,32 @@
 package com.camicompany.products_service.service;
 
-import com.camicompany.products_service.dto.ProductDTO;
+import com.camicompany.products_service.dto.CreateProductDTO;
+import com.camicompany.products_service.dto.ProductResponseDTO;
+import com.camicompany.products_service.dto.UpdateProductDTO;
 
 import java.util.List;
 
 
 public interface IProductService {
-    public List<ProductDTO> getProducts();
+    public List<ProductResponseDTO> getProducts();
 
-    public ProductDTO getProductById(Long productId);
+    public ProductResponseDTO getProductById(Long productId);
 
-    public ProductDTO getProductByCode(String code);
+    public ProductResponseDTO getProductByCode(String code);
 
-    public ProductDTO createProduct(ProductDTO productDTO);
+    public ProductResponseDTO createProduct(CreateProductDTO productDTO);
 
-    public ProductDTO updateProduct(Long productId, ProductDTO productDTO);
+    public ProductResponseDTO updateProduct(Long productId, UpdateProductDTO productDTO);
 
-    public ProductDTO discontinueProduct(Long productId);
+    public ProductResponseDTO discontinueProduct(Long productId);
 
-    public ProductDTO activateProduct(Long productId);
+    public ProductResponseDTO activateProduct(Long productId);
 
-    public List<ProductDTO> getProductsLowStock();
+    public List<ProductResponseDTO> getProductsLowStock();
 
-    public ProductDTO decreaseProductStock(Long productId, Integer quantity);
+    public ProductResponseDTO decreaseProductStock(Long productId, Integer quantity);
 
-    public ProductDTO increaseProductStock(Long productId, Integer quantity);
+    public ProductResponseDTO increaseProductStock(Long productId, Integer quantity);
 
 
 }

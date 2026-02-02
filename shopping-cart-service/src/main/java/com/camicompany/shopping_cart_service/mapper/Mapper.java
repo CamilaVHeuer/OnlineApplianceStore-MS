@@ -1,39 +1,39 @@
 package com.camicompany.shopping_cart_service.mapper;
 
-import com.camicompany.shopping_cart_service.dto.CartDTO;
-import com.camicompany.shopping_cart_service.dto.CartItemDTO;
+import com.camicompany.shopping_cart_service.dto.CartItemResponseDTO;
+import com.camicompany.shopping_cart_service.dto.CartResponseDTO;
+
 import com.camicompany.shopping_cart_service.model.Cart;
 import com.camicompany.shopping_cart_service.model.CartItem;
 
 import java.util.List;
 
 public class Mapper {
-    public static CartItemDTO toDTO(CartItem ci){
+    public static CartItemResponseDTO toDTO(CartItem ci){
         if (ci==null){
             return null;
         }
-        return CartItemDTO.builder().
-                itemId(ci.getItemId()).
-                productId(ci.getProductId())
-                .quantity(ci.getQuantity())
-                .build();
-
+        return new CartItemResponseDTO(
+                ci.getItemId(),
+                ci.getProductId(),
+                ci.getQuantity());
     }
 
 
-    public static CartDTO toDTO(Cart c){
+    public static CartResponseDTO toDTO(Cart c){
         if (c==null){
             return null;
         }
-        List<CartItemDTO> itemDTO = c.getItems().stream()
+        List<CartItemResponseDTO> itemDTO = c.getItems().stream()
                 .map(Mapper::toDTO)
                 .toList();
-        return CartDTO.builder().
-                id(c.getId()).
-                totalPrice(c.getTotalPrice())
-                .items(itemDTO)
-                .status(c.getStatus())
-                .build();
+
+        return new CartResponseDTO(
+                c.getId(),
+                c.getTotalPrice(),
+                itemDTO,
+                c.getStatus());
+
 
     }
 }

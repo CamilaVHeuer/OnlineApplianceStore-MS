@@ -1,14 +1,17 @@
 package com.camicompany.products_service.controller;
 
-import com.camicompany.products_service.dto.ProductDTO;
+import com.camicompany.products_service.dto.CreateProductDTO;
+import com.camicompany.products_service.dto.ProductResponseDTO;
+import com.camicompany.products_service.dto.UpdateProductDTO;
 import com.camicompany.products_service.service.IProductService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +32,7 @@ public class ProductController {
     @Operation(summary = "Get all products")
     @ApiResponse(responseCode = "200", description = "List of products returned")
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
 
         return ResponseEntity.ok(prodServ.getProducts());
     }
@@ -43,7 +46,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
     @GetMapping ("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(prodServ.getProductById(id));
     }
 
@@ -56,7 +59,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
     @GetMapping ("/code/{code}")
-    public ResponseEntity<ProductDTO> getProductByCode(@PathVariable String code) {
+    public ResponseEntity<ProductResponseDTO> getProductByCode(@PathVariable String code) {
         return ResponseEntity.ok(prodServ.getProductByCode(code));}
 
     @Operation(
@@ -64,7 +67,7 @@ public class ProductController {
             description = "Returns products whose stock is below the defined threshold"
     )
     @GetMapping("/low-stock")
-    public ResponseEntity<List<ProductDTO>> getProductsLowStock() {
+    public ResponseEntity<List<ProductResponseDTO>> getProductsLowStock() {
         return ResponseEntity.ok(prodServ.getProductsLowStock());
     }
 
@@ -78,9 +81,9 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "Product code already exists")
     })
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
-        ProductDTO createdProduct = prodServ.createProduct(productDTO);
-        return ResponseEntity.created(URI.create("/api/products/" + createdProduct.getProductId())).body(createdProduct);
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid CreateProductDTO productDTO) {
+        ProductResponseDTO createdProduct = prodServ.createProduct(productDTO);
+        return ResponseEntity.created(URI.create("/api/products/" + createdProduct.productId())).body(createdProduct);
     }
 
     @Operation(
@@ -93,7 +96,7 @@ public class ProductController {
             @ApiResponse(responseCode= "409", description = "Product code already exists or product is discontinued")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @RequestBody UpdateProductDTO productDTO) {
         return ResponseEntity.ok(prodServ.updateProduct(id, productDTO));
     }
 
@@ -107,7 +110,7 @@ public class ProductController {
             @ApiResponse(responseCode= "409", description = "Product already discontinued")
     })
     @PutMapping("/discontinue/{id}")
-    public ResponseEntity<ProductDTO> discontinueProduct(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDTO> discontinueProduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(prodServ.discontinueProduct(id));
 
     }
@@ -122,19 +125,19 @@ public class ProductController {
             @ApiResponse(responseCode= "409", description = "Product is already active")
     })
     @PutMapping("/activate/{id}")
-    public ResponseEntity<ProductDTO> activateProduct(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDTO> activateProduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(prodServ.activateProduct(id));
     }
 
     @Hidden
     @PutMapping("/decrease-stock/{id}")
-    public ResponseEntity<ProductDTO> decreaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {
+    public ResponseEntity<ProductResponseDTO> decreaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {
         return ResponseEntity.ok(prodServ.decreaseProductStock(id, quantity));
     }
 
     @Hidden
     @PutMapping("/restore-stock/{id}")
-    public ResponseEntity<ProductDTO> increaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {
+    public ResponseEntity<ProductResponseDTO> increaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {
         return ResponseEntity.ok(prodServ.increaseProductStock(id, quantity));
     }
 

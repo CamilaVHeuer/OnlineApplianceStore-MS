@@ -1,20 +1,22 @@
 package com.camicompany.shopping_cart_service.service;
 
-import com.camicompany.shopping_cart_service.dto.CartDTO;
+import com.camicompany.shopping_cart_service.dto.CartResponseDTO;
+import com.camicompany.shopping_cart_service.dto.CreateCartDTO;
+import com.camicompany.shopping_cart_service.dto.UpdateCartDTO;
 
 import java.util.List;
 
 public interface ICartService {
 
-    public List<CartDTO> getAllCarts();
+    public List<CartResponseDTO> getAllCarts();
 
-    public CartDTO getCartById(Long cartId);
+    public CartResponseDTO getCartById(Long cartId);
 
     public void deleteCart(Long cartId);
 
-    public CartDTO createCart(CartDTO cartDTO);
+    public CartResponseDTO createCart(CreateCartDTO createCartDTO);
 
-    public CartDTO updateCart(Long cartId, CartDTO cartDTO);
+    public CartResponseDTO updateCart(Long cartId, UpdateCartDTO updateCartDTO);
 
     public void markCartAsSold(Long cartId);
 }

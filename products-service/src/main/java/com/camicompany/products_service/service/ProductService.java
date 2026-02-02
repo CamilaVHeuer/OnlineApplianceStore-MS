@@ -1,6 +1,8 @@
 package com.camicompany.products_service.service;
 
-import com.camicompany.products_service.dto.ProductDTO;
+import com.camicompany.products_service.dto.CreateProductDTO;
+import com.camicompany.products_service.dto.ProductResponseDTO;
+import com.camicompany.products_service.dto.UpdateProductDTO;
 import com.camicompany.products_service.mapper.Mapper;
 import com.camicompany.products_service.model.Product;
 import com.camicompany.products_service.model.ProductStatus;
@@ -20,19 +22,18 @@ public class ProductService implements IProductService {
     private IProductRepository prodRepo;
 
     @Override
-    public List<ProductDTO> getProducts() {
+    public List<ProductResponseDTO> getProducts() {
         return prodRepo.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public ProductDTO getProductById(Long productId) {
-        Product product= prodRepo.findById(productId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    public ProductResponseDTO getProductById(Long productId) {
+        Product product= findProductOrThrow(productId);
         return Mapper.toDTO(product);
     }
 
     @Override
-    public ProductDTO getProductByCode(String code) {
+    public ProductResponseDTO getProductByCode(String code) {
         Product product = prodRepo.findByCode(code);
         if (product == null){ throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
@@ -40,41 +41,18 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDTO createProduct(ProductDTO productDTO) {
-        if (productDTO == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product data is required");
-        }
-        if (productDTO.getCode() == null || productDTO.getCode().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product code is required");
-        }
-        if (prodRepo.existsByCode(productDTO.getCode())) {
+    public ProductResponseDTO createProduct(CreateProductDTO productDTO) {
+
+        if (prodRepo.existsByCode(productDTO.code())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Product code already exists");
-        }
-        if (productDTO.getName()== null || productDTO.getName().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name is required");
-        }
-        if(productDTO.getBrand()== null || productDTO.getBrand().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product brand is required");
-        }
-        if (productDTO.getUnitPrice() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unit price is required");
-        }
-        if (productDTO.getStock() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is required");
-        }
-        if (productDTO.getUnitPrice() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unit price cannot be negative");
-        }
-        if (productDTO.getStock() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock cannot be negative");
         }
 
         Product product = Product.builder()
-                .code(productDTO.getCode())
-                .name(productDTO.getName())
-                .brand(productDTO.getBrand())
-                .unitPrice(productDTO.getUnitPrice())
-                .stock(productDTO.getStock())
+                .code(productDTO.code())
+                .name(productDTO.name())
+                .brand(productDTO.brand())
+                .unitPrice(productDTO.unitPrice())
+                .stock(productDTO.stock())
                 .status(ProductStatus.ACTIVE)
                 .build();
         Product savedProduct = prodRepo.save(product);
@@ -82,14 +60,12 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-        Product existingProduct = prodRepo.findById(productId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        if(existingProduct.getStatus()== ProductStatus.DISCONTINUED){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot update a discontinued product");
-        }
+    public ProductResponseDTO updateProduct(Long productId, UpdateProductDTO productDTO) {
+        Product existingProduct = findProductOrThrow(productId);
 
-        String newCode = productDTO.getCode();
+        ensureProductIsActive(existingProduct);
+
+        String newCode = productDTO.code();
 
         if (newCode != null && !newCode.isEmpty()) {
             boolean codeChanged = !existingProduct.getCode().equals(newCode);
@@ -102,42 +78,41 @@ public class ProductService implements IProductService {
             }
             existingProduct.setCode(newCode);
         }
-        if(productDTO.getName()!= null && !productDTO.getName().isEmpty()){
-            existingProduct.setName(productDTO.getName());
+        if(productDTO.name()!= null && !productDTO.name().isEmpty()){
+            existingProduct.setName(productDTO.name());
         }
-        if(productDTO.getBrand()!= null && !productDTO.getBrand().isEmpty()){
-            existingProduct.setBrand(productDTO.getBrand());}
+        if(productDTO.brand()!= null && !productDTO.brand().isEmpty()){
+            existingProduct.setBrand(productDTO.brand());}
 
-        if(productDTO.getUnitPrice()!= null){
-            if (productDTO.getUnitPrice() < 0) {
+        if(productDTO.unitPrice()!= null){
+            if (productDTO.unitPrice() < 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unit price cannot be negative");}
-            existingProduct.setUnitPrice(productDTO.getUnitPrice());}
-        if(productDTO.getStock()!= null){
-            if (productDTO.getStock() < 0) {
+            existingProduct.setUnitPrice(productDTO.unitPrice());}
+        if(productDTO.stock()!= null){
+            if (productDTO.stock() < 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock cannot be negative");}
-            existingProduct.setStock(productDTO.getStock());}
+            existingProduct.setStock(productDTO.stock());}
 
         Product updatedProduct = prodRepo.save(existingProduct);
         return Mapper.toDTO(updatedProduct);
     }
 
     @Override
-    public ProductDTO discontinueProduct(Long productId) {
+    public ProductResponseDTO discontinueProduct(Long productId) {
 
-        Product prod = prodRepo.findById(productId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        if (prod.getStatus() == ProductStatus.DISCONTINUED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product is already discontinued");
-        }
-            prod.setStatus(ProductStatus.DISCONTINUED);
-            return Mapper.toDTO(prodRepo.save(prod));
+        Product prod = findProductOrThrow(productId);
+
+        ensureProductIsActive(prod);
+
+        prod.setStatus(ProductStatus.DISCONTINUED);
+        return Mapper.toDTO(prodRepo.save(prod));
 
     }
 
     @Override
-    public ProductDTO activateProduct(Long productId) {
-        Product prod = prodRepo.findById(productId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    public ProductResponseDTO activateProduct(Long productId) {
+        Product prod = findProductOrThrow(productId);
+
         if (prod.getStatus() == ProductStatus.ACTIVE) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Product is already active");
         }
@@ -146,19 +121,18 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<ProductDTO> getProductsLowStock() {
+    public List<ProductResponseDTO> getProductsLowStock() {
 
         return prodRepo.findByStockLessThanEqual(5).stream().map(Mapper::toDTO).toList();
     }
 
     @Transactional
     @Override
-    public ProductDTO decreaseProductStock(Long productId, Integer quantity) {
-        Product product = prodRepo.findById(productId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        if (quantity == null || quantity <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity must be greater than zero");
-        }
+    public ProductResponseDTO decreaseProductStock(Long productId, Integer quantity) {
+        Product product = findProductOrThrow(productId);
+
+        validateQuantity(quantity);
+
         if (product.getStock() < quantity) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Insufficient stock");
         }
@@ -166,18 +140,46 @@ public class ProductService implements IProductService {
         Product updatedProduct = prodRepo.save(product);
         return Mapper.toDTO(updatedProduct);
     }
+
     @Transactional
     @Override
-    public ProductDTO increaseProductStock(Long productId, Integer quantity) {
-        Product product = prodRepo.findById(productId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        if (quantity == null || quantity <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity must be greater than zero");
-        }
+    public ProductResponseDTO increaseProductStock(Long productId, Integer quantity) {
+        Product product = findProductOrThrow(productId);
+
+        validateQuantity(quantity);
+
         product.setStock(product.getStock() + quantity);
         Product updatedProduct = prodRepo.save(product);
         return Mapper.toDTO(updatedProduct);
     }
+
+    //Helpers methods
+
+    //find product by id or throw 404
+    private Product findProductOrThrow(Long productId) {
+        return prodRepo.findById(productId).orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    }
+
+    //validate quantity is positive
+    private void validateQuantity(Integer quantity){
+        if (quantity == null || quantity <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity must be greater than zero");
+        }
+    }
+
+    //validate product is active
+    private void ensureProductIsActive(Product product) {
+        if (product.getStatus() == ProductStatus.DISCONTINUED) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Product is discontinued"
+            );
+        }
+    }
+
+
+
 
 }
 
