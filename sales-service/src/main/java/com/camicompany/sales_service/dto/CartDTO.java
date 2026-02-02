@@ -1,19 +1,12 @@
 package com.camicompany.sales_service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 import java.util.List;
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class CartDTO {
-    private Long id;
-    private Double totalPrice;
-    private List<CartItemDTO> items;
-    private String status;
 
-}
+public record CartDTO (
+    Long id,
+    Double totalPrice,
+    List<CartItemDTO> items,
+    String status)
+{}

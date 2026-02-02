@@ -1,12 +1,15 @@
 package com.camicompany.shopping_cart_service.controller;
 
-import com.camicompany.shopping_cart_service.dto.CartDTO;
+import com.camicompany.shopping_cart_service.dto.CartResponseDTO;
+import com.camicompany.shopping_cart_service.dto.CreateCartDTO;
+import com.camicompany.shopping_cart_service.dto.UpdateCartDTO;
 import com.camicompany.shopping_cart_service.service.ICartService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +30,7 @@ public class CartController {
     @Operation(summary = "Get all carts")
     @ApiResponse(responseCode = "200", description = "List of carts returned")
     @GetMapping
-    public ResponseEntity<List<CartDTO>> getAllCarts() {
+    public ResponseEntity<List<CartResponseDTO>> getAllCarts() {
         return ResponseEntity.ok(cartServ.getAllCarts());
     }
 
@@ -40,7 +43,7 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "Cart not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<CartDTO> getCartById(@PathVariable("id") Long cartId) {
+    public ResponseEntity<CartResponseDTO> getCartById(@PathVariable("id") Long cartId) {
         return ResponseEntity.ok(cartServ.getCartById(cartId));
     }
 
@@ -51,9 +54,9 @@ public class CartController {
             @ApiResponse(responseCode = "503", description = "Product service is unavailable")
     })
     @PostMapping
-    public ResponseEntity<CartDTO> createCart(@RequestBody CartDTO cartDTO) {
-        CartDTO createdCart = cartServ.createCart(cartDTO);
-        return ResponseEntity.created(URI.create("/api/cart/" + createdCart.getId())).body(createdCart);
+    public ResponseEntity<CartResponseDTO> createCart(@RequestBody @Valid CreateCartDTO createCartDTO) {
+        CartResponseDTO createdCart = cartServ.createCart(createCartDTO);
+        return ResponseEntity.created(URI.create("/api/cart/" + createdCart.id())).body(createdCart);
     }
 
     @Operation(summary = "Delete cart by ID", description = "Deletes a cart based on its unique identifier"
@@ -78,8 +81,8 @@ public class CartController {
             @ApiResponse(responseCode = "503", description = "Product service is unavailable")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<CartDTO> updateCart(@PathVariable("id") Long cartId, @RequestBody CartDTO cartDTO) {
-        return ResponseEntity.ok(cartServ.updateCart(cartId, cartDTO));
+    public ResponseEntity<CartResponseDTO> updateCart(@PathVariable("id") Long cartId, @RequestBody @Valid UpdateCartDTO updateCartDTO) {
+        return ResponseEntity.ok(cartServ.updateCart(cartId, updateCartDTO));
     }
 
     @Hidden

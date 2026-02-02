@@ -1,12 +1,14 @@
 package com.camicompany.sales_service.controller;
 
-import com.camicompany.sales_service.dto.SaleDTO;
+import com.camicompany.sales_service.dto.CreateSaleDTO;
+import com.camicompany.sales_service.dto.SaleResponseDTO;
 import com.camicompany.sales_service.dto.SaleDateDTO;
 import com.camicompany.sales_service.service.ISaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +30,14 @@ public class SaleController {
     @Operation(summary = "Get all sales")
     @ApiResponse(responseCode = "200", description = "List of sales returned")
     @GetMapping
-    public ResponseEntity<List<SaleDTO>> getAllSales(){
+    public ResponseEntity<List<SaleResponseDTO>> getAllSales(){
         return ResponseEntity.ok(saleServ.getAllSales());
     }
 
     @Operation(summary = "Get sales by date")
     @ApiResponse(responseCode = "200", description = "List of sales for the specified date returned")
     @GetMapping("/date/{date}")
-    public ResponseEntity<List<SaleDTO>> getSalesByDate(@PathVariable LocalDate date){
+    public ResponseEntity<List<SaleResponseDTO>> getSalesByDate(@PathVariable LocalDate date){
         return ResponseEntity.ok(saleServ.getSalesByDate(date));
     }
 
@@ -45,7 +47,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sale not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<SaleDTO> getSaleById(@PathVariable("id") Long saleId){
+    public ResponseEntity<SaleResponseDTO> getSaleById(@PathVariable("id") Long saleId){
         return ResponseEntity.ok(saleServ.getSaleById(saleId));
     }
 
@@ -57,9 +59,9 @@ public class SaleController {
             )
     })
     @PostMapping
-    public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO){
-        SaleDTO createdSale = saleServ.createSale(saleDTO);
-        return ResponseEntity.created(URI.create("/api/sales/" + createdSale.getSaleId())).body(createdSale);
+    public ResponseEntity<SaleResponseDTO> createSale(@RequestBody @Valid CreateSaleDTO createSaleDTO){
+        SaleResponseDTO createdSale = saleServ.createSale(createSaleDTO);
+        return ResponseEntity.created(URI.create("/api/sales/" + createdSale.saleId())).body(createdSale);
     }
 
     @Operation(summary = "Update an existing sale")
@@ -69,7 +71,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sale not found")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<SaleDTO> updateSale(@PathVariable("id") Long saleId, @RequestBody SaleDateDTO saleDateDTO){
+    public ResponseEntity<SaleResponseDTO> updateSale(@PathVariable("id") Long saleId, @RequestBody @Valid SaleDateDTO saleDateDTO){
         return ResponseEntity.ok(saleServ.updateSale(saleId, saleDateDTO));
     }
 
@@ -81,7 +83,7 @@ public class SaleController {
             @ApiResponse(responseCode = "503", description = "Dependent service unavailable (cart or product service)")
     })
     @PutMapping("/cancel/{id}")
-    public ResponseEntity<SaleDTO> cancelSale(@PathVariable("id") Long saleId) {
+    public ResponseEntity<SaleResponseDTO> cancelSale(@PathVariable("id") Long saleId) {
         return ResponseEntity.ok(saleServ.cancelSale(saleId));
     }
 }

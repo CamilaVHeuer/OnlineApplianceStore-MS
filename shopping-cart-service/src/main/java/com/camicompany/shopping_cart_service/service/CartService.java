@@ -1,8 +1,6 @@
 package com.camicompany.shopping_cart_service.service;
 
-import com.camicompany.shopping_cart_service.dto.CartDTO;
-import com.camicompany.shopping_cart_service.dto.CartItemDTO;
-import com.camicompany.shopping_cart_service.dto.ProductDTO;
+import com.camicompany.shopping_cart_service.dto.*;
 import com.camicompany.shopping_cart_service.mapper.Mapper;
 import com.camicompany.shopping_cart_service.model.Cart;
 
@@ -12,7 +10,7 @@ import com.camicompany.shopping_cart_service.repository.ICartRepository;
 import com.camicompany.shopping_cart_service.repository.IProductAPI;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import jakarta.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -38,59 +36,46 @@ public class CartService implements ICartService {
     private CartService self;
 
     @Override
-    public List<CartDTO> getAllCarts() {
+    public List<CartResponseDTO> getAllCarts() {
         return cartRepo.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public CartDTO getCartById(Long cartId) {
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+    public CartResponseDTO getCartById(Long cartId) {
+        Cart cart = findCartOrThrow(cartId);
         return Mapper.toDTO(cart);
     }
 
     @Override
     public void deleteCart(Long cartId) {
-        Cart cart= cartRepo.findById(cartId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
-        if (cart.getStatus() == CartStatus.SOLD) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete a sold cart");
-        }
+        Cart cart = findCartOrThrow(cartId);
+        ensureCartIsModifiable(cart);
         cartRepo.deleteById(cartId);
 
     }
 
     @Override
-    public CartDTO createCart(CartDTO cartDTO) {
-        if (cartDTO == null || cartDTO.getItems() == null || cartDTO.getItems().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart items are required");
-        }
+    public CartResponseDTO createCart(CreateCartDTO createCartDTO) {
+
         Cart cart = new Cart();
         List<CartItem> items = new ArrayList<>();
 
-        for (CartItemDTO itemDTO : cartDTO.getItems()) {
-            if (itemDTO.getProductId() == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product ID is required for each item");
-            }
-            if (itemDTO.getQuantity() == null || itemDTO.getQuantity() <= 0) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Quantity must be greater than zero for each item");
+        for (CartItemDTO itemDTO : createCartDTO.items()) {
+
+            ProductDTO product = self.getProductById(itemDTO.productId());
+            if(!PRODUCT_STATUS_ACTIVE.equals(product.status())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "product is not active and cannot be added to cart. Product ID: " + itemDTO.productId());
             }
 
-            ProductDTO product = self.getProductById(itemDTO.getProductId());
-            if(!PRODUCT_STATUS_ACTIVE.equals(product.getStatus())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "product is not active and cannot be added to cart. Product ID: " + itemDTO.getProductId());
-            }
-
-            if (product.getStock() < itemDTO.getQuantity()) {
+            if (product.stock() < itemDTO.quantity()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Insufficient stock for product ID: " + itemDTO.getProductId());
+                        "Insufficient stock for product ID: " + itemDTO.productId());
             }
 
             CartItem item = new CartItem();
-            item.setProductId(product.getProductId());
-            item.setQuantity(itemDTO.getQuantity());
-            item.setUnitPrice(product.getUnitPrice());
+            item.setProductId(product.productId());
+            item.setQuantity(itemDTO.quantity());
+            item.setUnitPrice(product.unitPrice());
             item.setCart(cart);
 
             items.add(item);
@@ -120,42 +105,31 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public CartDTO updateCart(Long cartId, CartDTO cartDTO) {
-        if (cartDTO == null || cartDTO.getItems() == null || cartDTO.getItems().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart items are required");
-        }
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+    public CartResponseDTO updateCart(Long cartId, UpdateCartDTO updateCartDTO) {
 
-        if (cart.getStatus() == CartStatus.SOLD) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot update a sold cart");
-        }
+        Cart cart = findCartOrThrow(cartId);
+
+        ensureCartIsModifiable(cart);
 
         List<CartItem> updatedItems = new ArrayList<>();
 
-        for (CartItemDTO itemDTO : cartDTO.getItems()) {
-            if (itemDTO.getProductId() == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product ID is required");
+        for (CartItemDTO itemDTO : updateCartDTO.items()) {
+
+            ProductDTO product = self.getProductById(itemDTO.productId());
+            if(!PRODUCT_STATUS_ACTIVE.equals(product.status())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "product is not active and cannot be added to cart. Product ID: " + itemDTO.productId());
             }
 
-            if (itemDTO.getQuantity() == null || itemDTO.getQuantity() <= 0) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity must be greater than zero");
-            }
-
-            ProductDTO product = self.getProductById(itemDTO.getProductId());
-            if(!PRODUCT_STATUS_ACTIVE.equals(product.getStatus())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "product is not active and cannot be added to cart. Product ID: " + itemDTO.getProductId());
-            }
-
-            if (product.getStock() < itemDTO.getQuantity()) {
+            if (product.stock() < itemDTO.quantity()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Insufficient stock for product ID: " + itemDTO.getProductId());
+                        "Insufficient stock for product ID: " + itemDTO.productId());
             }
+
             CartItem cartItem = new CartItem();
 
-            cartItem.setProductId(product.getProductId());
-            cartItem.setUnitPrice(product.getUnitPrice());
-            cartItem.setQuantity(itemDTO.getQuantity());
+            cartItem.setProductId(product.productId());
+            cartItem.setUnitPrice(product.unitPrice());
+            cartItem.setQuantity(itemDTO.quantity());
 
             updatedItems.add(cartItem);
         }
@@ -179,15 +153,24 @@ public class CartService implements ICartService {
 
     @Override
     public void markCartAsSold(Long cartId) {
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+        Cart cart = findCartOrThrow(cartId);
 
-        if (cart.getStatus() == CartStatus.SOLD) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart is already sold");
-        }
+        ensureCartIsModifiable(cart);
 
         cart.setStatus(CartStatus.SOLD);
         cartRepo.save(cart);
+    }
+
+    //helper method
+    private Cart findCartOrThrow(Long cartId) {
+        return cartRepo.findById(cartId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+    }
+
+    private void ensureCartIsModifiable(Cart cart) {
+        if (cart.getStatus() == CartStatus.SOLD) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot modify a sold cart");
+        }
     }
 
 }

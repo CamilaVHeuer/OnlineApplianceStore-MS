@@ -1,6 +1,7 @@
 package com.camicompany.sales_service.service;
 
-import com.camicompany.sales_service.dto.SaleDTO;
+import com.camicompany.sales_service.dto.CreateSaleDTO;
+import com.camicompany.sales_service.dto.SaleResponseDTO;
 import com.camicompany.sales_service.dto.SaleDateDTO;
 
 import java.time.LocalDate;
@@ -8,17 +9,17 @@ import java.util.List;
 
 public interface ISaleService {
 
-    public List<SaleDTO> getAllSales();
+    public List<SaleResponseDTO> getAllSales();
 
-    public SaleDTO getSaleById(Long saleId);
+    public SaleResponseDTO getSaleById(Long saleId);
 
-    public List<SaleDTO> getSalesByDate(LocalDate date);
+    public List<SaleResponseDTO> getSalesByDate(LocalDate date);
 
-    public SaleDTO createSale(SaleDTO saleDTO);
+    public SaleResponseDTO createSale(CreateSaleDTO saleResponseDTO);
 
-    public SaleDTO updateSale(Long saleId, SaleDateDTO saleDateDTO);
+    public SaleResponseDTO updateSale(Long saleId, SaleDateDTO saleDateDTO);
 
-    public SaleDTO cancelSale(Long saleId);
+    public SaleResponseDTO cancelSale(Long saleId);
 
 
 }
