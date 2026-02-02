@@ -22,7 +22,7 @@ E-commerce system for appliance sales developed with **microservices architectur
 - **🔄 Circuit Breaker**: Fault tolerance with Resilience4j
 - **🔁 Retry Pattern**: Automatic retries in inter-service calls
 - **📋 MVC Pattern**: Model-View-Controller architecture in each microservice
-- **📦 DTO Pattern**: Data transfer between layers and services
+- **📦 DTO Pattern**: Data transfer between layers and services (implemented using Java records for immutability, validation, and cleaner code)
 
 ### Architecture Diagram
 
@@ -449,7 +449,20 @@ PUT http://localhost:8080/api/sales/cancel/1
 - **Separation of Concerns**: Clear separation of responsibilities
 - **Dependency Injection**: Use of Spring IoC
 - **Exception Handling**: Centralized exception handling
-- **Data Transfer Objects**: DTOs for data transfer between layers and services
+- **Data Transfer Objects**: DTOs for data transfer between layers and services (using Java records)
+
+---
+
+### 🚀 Recent Improvements & Best Practices
+
+- **Bean Validation in DTOs**: Use of `@NotNull`, `@Positive`, etc. directly in records for automatic request validation and less service-layer logic.
+- **Global Exception Handler**: Centralized error handling for consistent API responses and cleaner controllers/services.
+- **Migration to Java Records**: All DTOs refactored to records, improving immutability, expressiveness, and reducing boilerplate.
+- **Operation-Specific Records**: Clear separation of request, response, and update records for each use case.
+- **Helper Methods**: Encapsulation of repetitive logic in helpers for better readability and maintainability.
+- **Improved Entity-DTO Mapping**: More organized and maintainable mapping between entities and DTOs.
+
+These improvements result in a more robust, maintainable, and professional codebase aligned with modern Java and Spring Boot standards.
 
 ## Author
 
