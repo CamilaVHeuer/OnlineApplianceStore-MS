@@ -2,6 +2,14 @@ spring:
   application:
     name: auth-service
 
+  security:
+    jwt:
+      private:
+        key: ${PRIVATE_KEY}
+      user:
+        generator: ${USER_GENERATOR}
+
+
   datasource:
     url: jdbc:h2:mem:service_auth;MODE=MySQL;DB_CLOSE_DELAY=-1;
     driverClassName: org.h2.Driver
@@ -21,6 +29,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
+app:
+  admin:
+    username: ${ADMIN_USERNAME}
+    password: ${ADMIN_PASSWORD}
+
 
 server:
   port: 8085
@@ -29,3 +42,4 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
