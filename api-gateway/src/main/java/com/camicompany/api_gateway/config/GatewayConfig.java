@@ -17,6 +17,8 @@ public class GatewayConfig {
                                                 .uri("lb://shopping-cart-service"))
                                 .route("sales", r -> r.path("/api/sales/**")
                                                 .uri("lb://sales-service"))
+                                .route("auth", r -> r.path("/api/auth/**")
+                                                .uri("lb://auth-service"))
 
                                 // --- Swagger UI compatibility routes (with service prefix) ---
                                 .route("products-prefixed", r -> r.path("/products-service/api/products/**")
@@ -28,6 +30,9 @@ public class GatewayConfig {
                                 .route("sales-prefixed", r -> r.path("/sales-service/api/sales/**")
                                                 .filters(f -> f.stripPrefix(1))
                                                 .uri("lb://sales-service"))
+                                .route("auth-prefixed", r -> r.path("/auth-service/api/auth/**")
+                                                .filters(f -> f.stripPrefix(1))
+                                                .uri("lb://auth-service"))
 
                                 // --- Swagger documentation routes ---
                                 .route("products-docs", r -> r.path("/products-service/v3/api-docs")
@@ -39,6 +44,9 @@ public class GatewayConfig {
                                 .route("sales-docs", r -> r.path("/sales-service/v3/api-docs")
                                                 .filters(f -> f.stripPrefix(1))
                                                 .uri("lb://sales-service"))
+                                .route("auth-docs", r -> r.path("/auth-service/v3/api-docs")
+                                                .filters(f -> f.stripPrefix(1))
+                                                .uri("lb://auth-service"))
                                 .build();
         }
 }
