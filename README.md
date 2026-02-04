@@ -40,8 +40,26 @@ _Diagram showing interaction between all microservices, implemented patterns and
 | **Products Service**      | 8083 | [📚 Docs](http://localhost:8083/swagger-ui.html) | Product and inventory management         | H2       |
 | **Shopping Cart Service** | 8082 | [📚 Docs](http://localhost:8082/swagger-ui.html) | Shopping cart management                 | H2       |
 | **Sales Service**         | 8081 | [📚 Docs](http://localhost:8081/swagger-ui.html) | Sales and transaction processing         | H2       |
+| **Auth Service**          | 8085 | [📚 Docs](http://localhost:8085/swagger-ui.html) | User authentication, roles, permissions, JWT security | H2       |
 
 ## 🚀 Main Features
+
+### 🔐 Auth Service
+
+- ✅ **User Management**: Register, query and manage users
+- ✅ **Role and Permission Management**: Assign roles and granular permissions to users
+- ✅ **Spring Security Integration**: Full authentication and authorization using Spring Security
+- ✅ **JWT Authentication**: Secure login and token-based authentication for all users
+- ✅ **Centralized Authentication**: All user authentication is handled by the Auth Service, enabling future integration with other microservices
+
+#### Example Entities
+
+- **UserApp**: Stores user credentials and profile information
+- **Role**: Defines user roles (e.g., ADMIN, USER)
+- **Permission**: Fine-grained access control for specific actions
+
+> **Note:**  
+> Authentication and user management are now available through the Auth Service. Other microservices will be integrated with security in future releases.
 
 ### 📱 Products Service
 
@@ -110,6 +128,7 @@ _Diagram showing interaction between all microservices, implemented patterns and
 | **Products Service** | http://localhost:8083/swagger-ui.html |
 | **Shopping Cart Service** | http://localhost:8082/swagger-ui.html |
 | **Sales Service** | http://localhost:8081/swagger-ui.html |
+| **Auth Service** | http://localhost:8085/swagger-ui.html |
 
 ### 🎯 Testing Recommendations
 
@@ -293,6 +312,17 @@ PUT    /api/sales/{id}                 # Update sale
 PUT    /api/sales/cancel/{id}          # Cancel sale (restores stock)
 ```
 
+### Auth Service (via Gateway: `/auth`)
+
+```http
+POST   /api/auth/register               # Register new user
+POST   /api/auth/login                  # User login
+GET    /api/auth/users                  # List all users
+GET    /api/auth/users/{id}             # Get user by ID
+PUT    /api/auth/users/{id}             # Update user information
+DELETE /api/auth/users/{id}             # Delete user (logical)
+```
+
 ## �️ Data Models
 
 ### Product
@@ -332,6 +362,18 @@ PUT    /api/sales/cancel/{id}          # Cancel sale (restores stock)
   "cartId": 1,
   "totalAmount": 1799.98,
   "status": "CREATED"
+}
+```
+
+### UserApp
+
+```json
+{
+  "id": 1,
+  "username": "john_doe",
+  "password": "securepassword",
+  "email": "john.doe@example.com",
+  "roles": ["USER"]
 }
 ```
 
@@ -428,6 +470,27 @@ Content-Type: application/json
 
 ```http
 PUT http://localhost:8080/api/sales/cancel/1
+```
+
+5. **User Registration and Login**
+
+```http
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "securepassword",
+  "email": "john.doe@example.com"
+}
+
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "securepassword"
+}
 ```
 
 ## 🎯 Future Implementations
