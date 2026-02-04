@@ -19,6 +19,8 @@ springdoc:
         name: Shopping Cart Service
       - url: /sales-service/v3/api-docs
         name: Sales Service
+      - url: /auth/v3/api-docs
+        name: Auth Service
   api-docs:
     enabled: true
 
