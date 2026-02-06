@@ -17,6 +17,24 @@ services:
     networks:
       - 'appliance-store-network'
 
+  auth-service:
+    build: auth-service
+    mem_limit: 512m
+    ports:
+      - "8085:8085"
+    environment:
+      - CONFIG_SERVER_HOST=config-server
+      - SPRING_PROFILES_ACTIVE=docker
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - USER_GENERATOR=${USER_GENERATOR}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      - config-server
+      - eureka-sv
+    networks:
+      - 'appliance-store-network'
+
   api-gateway:
     build: api-gateway
     mem_limit: 512m
@@ -31,6 +49,7 @@ services:
     networks:
       - 'appliance-store-network'
 
+
   products-service:
     build: products-service
     mem_limit: 512m
@@ -39,11 +58,14 @@ services:
     environment:
       - CONFIG_SERVER_HOST=config-server
       - SPRING_PROFILES_ACTIVE=docker
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - USER_GENERATOR=${USER_GENERATOR}
     depends_on:
       - config-server
       - eureka-sv
     networks:
       - 'appliance-store-network'
+
   shopping-cart-service:
     build: shopping-cart-service
     mem_limit: 512m
@@ -52,11 +74,14 @@ services:
     environment:
       - CONFIG_SERVER_HOST=config-server
       - SPRING_PROFILES_ACTIVE=docker
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - USER_GENERATOR=${USER_GENERATOR}
     depends_on:
       - config-server
       - eureka-sv
     networks:
       - 'appliance-store-network'
+
   sales-service:
     build: sales-service
     mem_limit: 512m
@@ -65,6 +90,8 @@ services:
     environment:
       - CONFIG_SERVER_HOST=config-server
       - SPRING_PROFILES_ACTIVE=docker
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - USER_GENERATOR=${USER_GENERATOR}
     depends_on:
       - config-server
       - eureka-sv
@@ -72,6 +99,7 @@ services:
       - products-service
     networks:
       - 'appliance-store-network'
+
 
 networks:
   appliance-store-network:
