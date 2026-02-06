@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -30,6 +31,7 @@ public class SaleController {
     @Operation(summary = "Get all sales")
     @ApiResponse(responseCode = "200", description = "List of sales returned")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SaleResponseDTO>> getAllSales(){
         return ResponseEntity.ok(saleServ.getAllSales());
     }
@@ -37,6 +39,7 @@ public class SaleController {
     @Operation(summary = "Get sales by date")
     @ApiResponse(responseCode = "200", description = "List of sales for the specified date returned")
     @GetMapping("/date/{date}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SaleResponseDTO>> getSalesByDate(@PathVariable LocalDate date){
         return ResponseEntity.ok(saleServ.getSalesByDate(date));
     }
@@ -47,6 +50,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sale not found")
     })
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<SaleResponseDTO> getSaleById(@PathVariable("id") Long saleId){
         return ResponseEntity.ok(saleServ.getSaleById(saleId));
     }
@@ -59,6 +63,7 @@ public class SaleController {
             )
     })
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<SaleResponseDTO> createSale(@RequestBody @Valid CreateSaleDTO createSaleDTO){
         SaleResponseDTO createdSale = saleServ.createSale(createSaleDTO);
         return ResponseEntity.created(URI.create("/api/sales/" + createdSale.saleId())).body(createdSale);
@@ -71,6 +76,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sale not found")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SaleResponseDTO> updateSale(@PathVariable("id") Long saleId, @RequestBody @Valid SaleDateDTO saleDateDTO){
         return ResponseEntity.ok(saleServ.updateSale(saleId, saleDateDTO));
     }
@@ -83,6 +89,7 @@ public class SaleController {
             @ApiResponse(responseCode = "503", description = "Dependent service unavailable (cart or product service)")
     })
     @PutMapping("/cancel/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<SaleResponseDTO> cancelSale(@PathVariable("id") Long saleId) {
         return ResponseEntity.ok(saleServ.cancelSale(saleId));
     }
