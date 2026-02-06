@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -67,6 +68,7 @@ public class ProductController {
             description = "Returns products whose stock is below the defined threshold"
     )
     @GetMapping("/low-stock")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProductResponseDTO>> getProductsLowStock() {
         return ResponseEntity.ok(prodServ.getProductsLowStock());
     }
@@ -81,6 +83,7 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "Product code already exists")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid CreateProductDTO productDTO) {
         ProductResponseDTO createdProduct = prodServ.createProduct(productDTO);
         return ResponseEntity.created(URI.create("/api/products/" + createdProduct.productId())).body(createdProduct);
@@ -96,6 +99,7 @@ public class ProductController {
             @ApiResponse(responseCode= "409", description = "Product code already exists or product is discontinued")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @RequestBody UpdateProductDTO productDTO) {
         return ResponseEntity.ok(prodServ.updateProduct(id, productDTO));
     }
@@ -110,6 +114,7 @@ public class ProductController {
             @ApiResponse(responseCode= "409", description = "Product already discontinued")
     })
     @PutMapping("/discontinue/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDTO> discontinueProduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(prodServ.discontinueProduct(id));
 
@@ -125,6 +130,7 @@ public class ProductController {
             @ApiResponse(responseCode= "409", description = "Product is already active")
     })
     @PutMapping("/activate/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDTO> activateProduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(prodServ.activateProduct(id));
     }

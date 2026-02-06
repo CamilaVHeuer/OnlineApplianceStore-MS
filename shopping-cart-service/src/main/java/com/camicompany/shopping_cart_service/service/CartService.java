@@ -14,8 +14,11 @@ import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +46,14 @@ public class CartService implements ICartService {
     @Override
     public CartResponseDTO getCartById(Long cartId) {
         Cart cart = findCartOrThrow(cartId);
+        ensureOwnerOrAdmin(cart);
         return Mapper.toDTO(cart);
     }
 
     @Override
     public void deleteCart(Long cartId) {
         Cart cart = findCartOrThrow(cartId);
+        ensureOwnerOrAdmin(cart);
         ensureCartIsModifiable(cart);
         cartRepo.deleteById(cartId);
 
@@ -57,8 +62,13 @@ public class CartService implements ICartService {
     @Override
     public CartResponseDTO createCart(CreateCartDTO createCartDTO) {
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
         Cart cart = new Cart();
         List<CartItem> items = new ArrayList<>();
+
+        cart.setUsername(username);
 
         for (CartItemDTO itemDTO : createCartDTO.items()) {
 
@@ -108,6 +118,8 @@ public class CartService implements ICartService {
     public CartResponseDTO updateCart(Long cartId, UpdateCartDTO updateCartDTO) {
 
         Cart cart = findCartOrThrow(cartId);
+
+        ensureOwnerOrAdmin(cart);
 
         ensureCartIsModifiable(cart);
 
@@ -171,6 +183,22 @@ public class CartService implements ICartService {
         if (cart.getStatus() == CartStatus.SOLD) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot modify a sold cart");
         }
+    }
+
+    private boolean isAdmin(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private void ensureOwnerOrAdmin(Cart cart){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String authUsername  = auth.getName();
+
+        if(!cart.getUsername().equals(authUsername) && !isAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Not your cart");
+        }
+
     }
 
 }

@@ -12,6 +12,8 @@ import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,6 +47,7 @@ public class SaleService implements ISaleService {
     @Override
     public SaleResponseDTO getSaleById(Long saleId) {
         Sale sale = findSaleOrThrow(saleId);
+        ensureOwnerOrAdmin(sale);
         return Mapper.toDTO(sale);
     }
 
@@ -56,7 +59,8 @@ public class SaleService implements ISaleService {
 
     @Override
     public SaleResponseDTO createSale(CreateSaleDTO createSaleDTO) {
-
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
         Sale sale = new Sale();
         CartDTO cart = self.getCartSafe(createSaleDTO.cartId());
         if(!CART_STATUS_CREATED.equals(cart.status())){
@@ -70,6 +74,7 @@ public class SaleService implements ISaleService {
         }
 
         sale.setDate(createSaleDTO.date());
+        sale.setUsername(username);
         sale.setCartId(cart.id());
         sale.setTotalAmount(cart.totalPrice());
         sale.setStatus(SaleStatus.CREATED);
@@ -122,6 +127,9 @@ public class SaleService implements ISaleService {
     @Override
     public SaleResponseDTO cancelSale(Long saleId) {
         Sale sale = findSaleOrThrow(saleId);
+
+        ensureOwnerOrAdmin(sale);
+
         if (sale.getStatus() == SaleStatus.CANCELLED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Sale is already cancelled");
         }
@@ -164,5 +172,22 @@ public class SaleService implements ISaleService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Sale not found"));
     }
+
+    private void ensureOwnerOrAdmin(Sale sale){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        if(!sale.getUsername().equals(username) && !isAdmin()){
+            throw  new ResponseStatusException(HttpStatus.FORBIDDEN,"Not your sale");
+        }
+    }
+
+    private boolean isAdmin(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities()
+                .stream()
+                        .anyMatch(a->a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
 
 }

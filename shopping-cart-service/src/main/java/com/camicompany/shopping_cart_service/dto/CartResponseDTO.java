@@ -10,6 +10,8 @@ import java.util.List;
 public record CartResponseDTO(
     @Schema(description = "Unique identifier of the cart", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     Long id,
+    @Schema(description = "Username of the user who owns this cart", example ="user1", accessMode = Schema.AccessMode.READ_ONLY)
+    String username,
     @Schema( example = "1500.00", accessMode = Schema.AccessMode.READ_ONLY)
     Double totalPrice,
     @Schema(description = "List of items in the cart")

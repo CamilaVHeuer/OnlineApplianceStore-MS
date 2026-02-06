@@ -14,6 +14,7 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long saleId;
     private LocalDate date;
+    private String username;
     private Long cartId;
     private Double totalAmount;
     @Enumerated(EnumType.STRING)

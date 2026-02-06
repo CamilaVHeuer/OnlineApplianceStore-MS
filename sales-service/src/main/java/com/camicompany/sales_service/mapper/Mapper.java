@@ -12,6 +12,7 @@ public class Mapper {
         return new SaleResponseDTO(
                 sale.getSaleId(),
                 sale.getDate(),
+                sale.getUsername(),
                 sale.getCartId(),
                 sale.getTotalAmount(),
                 sale.getStatus());

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -30,6 +31,7 @@ public class CartController {
     @Operation(summary = "Get all carts")
     @ApiResponse(responseCode = "200", description = "List of carts returned")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CartResponseDTO>> getAllCarts() {
         return ResponseEntity.ok(cartServ.getAllCarts());
     }
@@ -43,6 +45,7 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "Cart not found")
     })
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponseDTO> getCartById(@PathVariable("id") Long cartId) {
         return ResponseEntity.ok(cartServ.getCartById(cartId));
     }
@@ -54,6 +57,7 @@ public class CartController {
             @ApiResponse(responseCode = "503", description = "Product service is unavailable")
     })
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponseDTO> createCart(@RequestBody @Valid CreateCartDTO createCartDTO) {
         CartResponseDTO createdCart = cartServ.createCart(createCartDTO);
         return ResponseEntity.created(URI.create("/api/cart/" + createdCart.id())).body(createdCart);
@@ -67,6 +71,7 @@ public class CartController {
             @ApiResponse(responseCode = "409", description = "Cannot delete a sold cart")
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteCart(@PathVariable("id")  Long cartId) {
         cartServ.deleteCart(cartId);
         return ResponseEntity.noContent().build();
@@ -81,6 +86,7 @@ public class CartController {
             @ApiResponse(responseCode = "503", description = "Product service is unavailable")
     })
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CartResponseDTO> updateCart(@PathVariable("id") Long cartId, @RequestBody @Valid UpdateCartDTO updateCartDTO) {
         return ResponseEntity.ok(cartServ.updateCart(cartId, updateCartDTO));
     }

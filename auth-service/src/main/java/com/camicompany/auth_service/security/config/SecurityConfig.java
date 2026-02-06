@@ -28,11 +28,11 @@ public class SecurityConfig {
     private JwtUtils jwtUtils;
 
     @Bean
-    public SecurityFilterChain filterChain (HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .csrf(csrf->csrf.disable())
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class) //agrego mi filtro antes del filtro real
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtils jwtUtils) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
                 .build();
     }
 

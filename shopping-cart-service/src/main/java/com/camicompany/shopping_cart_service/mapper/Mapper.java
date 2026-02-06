@@ -30,6 +30,7 @@ public class Mapper {
 
         return new CartResponseDTO(
                 c.getId(),
+                c.getUsername(),
                 c.getTotalPrice(),
                 itemDTO,
                 c.getStatus());
