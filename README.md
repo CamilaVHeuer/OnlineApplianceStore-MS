@@ -50,7 +50,9 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - ✅ **Role and Permission Management**: Assign roles and granular permissions to users
 - ✅ **Spring Security Integration**: Full authentication and authorization using Spring Security
 - ✅ **JWT Authentication**: Secure login and token-based authentication for all users
-- ✅ **Centralized Authentication**: All user authentication is handled by the Auth Service, enabling future integration with other microservices
+- ✅ **Centralized Authentication** responsible for issuing and validationg JWT
+- ✅ **DataInitializer** for automatic creation of base roles and permissions at startup
+- ✅ **Stateless Authentication** across all microservices
 
 #### Example Entities
 
@@ -58,8 +60,7 @@ _Diagram showing interaction between all microservices, implemented patterns and
 - **Role**: Defines user roles (e.g., ADMIN, USER)
 - **Permission**: Fine-grained access control for specific actions
 
-> **Note:**  
-> Authentication and user management are now available through the Auth Service. Other microservices will be integrated with security in future releases.
+All other microservices validate JWT tokens locally using a shared public key and Spring Security filters.
 
 ### 📱 Products Service
 
@@ -108,8 +109,52 @@ _Diagram showing interaction between all microservices, implemented patterns and
 >
 > This approach ensures data consistency and reliability in distributed systems—just as state control is essential for safety in nuclear engineering, it is also key for robust microservices.
 
-## � API Documentation
 
+
+## 🔐 Distributed Security Architecture (JWT + Spring Security)
+
+This project implements distributed authentication and authorization using JWT and Spring Security across all microservices.
+
+#### Authentication Flow
+
+- User authenticates against **Auth Service**
+- **Auth Service** issues a JWT containing:
+  - `username`
+  - `roles` / `authorities`
+- Client sends the JWT in the request header:
+  - `Authorization: Bearer <token>`
+- API Gateway routes the request to the target microservice
+- Each microservice:
+  - Validates the token using a JWT filter
+  - Builds an `Authentication` object in the `SecurityContext`
+  - Applies endpoint- and method-level authorization
+
+#### Inter-Service Communication Security
+
+- When a microservice calls another (e.g., **Sales → Cart → Products**) the user JWT must be propagated.
+- Implemented using a **Feign Request Interceptor** that:
+  - Captures the incoming `Authorization` header
+  - Forwards it automatically in outgoing Feign requests
+- This ensures:
+  - User identity is preserved
+  - Role-based authorization works across services
+  - No service-to-service anonymous calls
+
+#### Authorization Levels
+
+- **Filter chain** — coarse-grained access (public vs authenticated)
+- **Method security** (`@PreAuthorize`) — fine-grained rules:
+  - Role-based: `hasRole('ADMIN')`
+  - Authentication-based: `isAuthenticated()`
+
+#### Benefits
+
+- Stateless security
+- No session sharing
+- No centralized auth bottleneck
+- Production-style security model
+
+## � API Documentation
 ### 🌐 Centralized Documentation (Recommended)
 
 **📍 Access all services through API Gateway**: http://localhost:8000/swagger-ui.html
@@ -134,6 +179,45 @@ _Diagram showing interaction between all microservices, implemented patterns and
 
 - **Development**: Use individual Swagger UIs for rapid testing
 - **Integration**: Use Gateway Swagger for complete workflow and Circuit Breaker testing
+
+🔐 For secured endpoints, first authenticate via Auth Service and use the returned JWT as:
+Authorization: Bearer token
+
+### 🛡️ Fault Tolerance Testing
+
+Test **Circuit Breaker** through Gateway:
+1. Stop a service (e.g., Products Service)
+2. Try creating a sale → Observe **503 Service Unavailable**
+3. Restart service → Automatic recovery
+
+## � API Documentation
+### 🌐 Centralized Documentation (Recommended)
+
+**📍 Access all services through API Gateway**: http://localhost:8000/swagger-ui.html
+
+- ✅ **Service dropdown** (Products, Shopping Cart, Sales)
+- ✅ **Unified testing** with fault tolerance
+- ✅ **Production-ready** routing
+
+> **⚠️ Note:**
+> When using the centralized Swagger UI at [http://localhost:8000/swagger-ui.html](http://localhost:8000/swagger-ui.html), make sure to manually select the `http://localhost:8000` server in the "Servers" dropdown for each service. By default, Swagger may select the direct service URL (e.g., `http://localhost:8083`), which will not work for API Gateway requests. Always choose the API Gateway server (`:8000`) to test through the gateway.
+
+### 🔧 Individual Service Documentation
+
+| Service | Direct Swagger URL |
+|---------|-------------------|
+| **Products Service** | http://localhost:8083/swagger-ui.html |
+| **Shopping Cart Service** | http://localhost:8082/swagger-ui.html |
+| **Sales Service** | http://localhost:8081/swagger-ui.html |
+| **Auth Service** | http://localhost:8085/swagger-ui.html |
+
+### 🎯 Testing Recommendations
+
+- **Development**: Use individual Swagger UIs for rapid testing
+- **Integration**: Use Gateway Swagger for complete workflow and Circuit Breaker testing
+
+🔐 For secured endpoints, first authenticate via Auth Service and use the returned JWT as:
+Authorization: Bearer token
 
 ### 🛡️ Fault Tolerance Testing
 
@@ -493,12 +577,6 @@ Content-Type: application/json
 }
 ```
 
-## 🎯 Future Implementations
-
-- [ ] **🔐 Security** with JWT and OAuth2
-- [ ] **🌐 API Versioning** (v1, v2, etc.)
-- [ ] **📱 Frontend** with React
-
 ## 📚 Implemented Patterns and Best Practices
 
 ### Architectural
@@ -524,6 +602,10 @@ Content-Type: application/json
 - **Operation-Specific Records**: Clear separation of request, response, and update records for each use case.
 - **Helper Methods**: Encapsulation of repetitive logic in helpers for better readability and maintainability.
 - **Improved Entity-DTO Mapping**: More organized and maintainable mapping between entities and DTOs.
+- **Distributed JWT Security**: Authentication centralized in Auth Service, validation decentralized in each microservice.
+- **Feign Security Interceptor**: Automatic propagation of Authorization header between microservices.
+- **Method-Level Authorization**: Use of @PreAuthorize for role-based and authentication-based access.
+- **Stateless Architecture**: No server-side sessions.
 
 These improvements result in a more robust, maintainable, and professional codebase aligned with modern Java and Spring Boot standards.
 
