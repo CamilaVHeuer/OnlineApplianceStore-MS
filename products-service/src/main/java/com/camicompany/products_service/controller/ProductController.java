@@ -137,12 +137,14 @@ public class ProductController {
 
     @Hidden
     @PutMapping("/decrease-stock/{id}")
+    @PreAuthorize("hasRole('SERVICE')")
     public ResponseEntity<ProductResponseDTO> decreaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {
         return ResponseEntity.ok(prodServ.decreaseProductStock(id, quantity));
     }
 
     @Hidden
     @PutMapping("/restore-stock/{id}")
+    @PreAuthorize("hasRole('SERVICE')")
     public ResponseEntity<ProductResponseDTO> increaseProductStock(@PathVariable Long id, @RequestBody Integer quantity) {
         return ResponseEntity.ok(prodServ.increaseProductStock(id, quantity));
     }

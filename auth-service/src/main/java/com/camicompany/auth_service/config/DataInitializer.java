@@ -22,6 +22,12 @@ public class DataInitializer {
     @Value("${app.admin.password}")
     private String adminPassword;
 
+    @Value("${app.service.username}")
+    private String serviceUsername;
+
+    @Value("${app.service.password}")
+    private String servicePassword;
+
 
     @Bean
     CommandLineRunner initData(
@@ -47,6 +53,7 @@ public class DataInitializer {
             // ROLES
             createRoleIfNotExists(roleRepo, "ADMIN", Set.of(create, read, update, delete));
             createRoleIfNotExists(roleRepo, "USER", Set.of(read, update, create));
+            createRoleIfNotExists(roleRepo, "SERVICE", Set.of(create, read, update, delete));
 
             // Create user ADMIN if not exist
             if (!userRepo.existsByUsername(adminUsername)) {
@@ -66,6 +73,25 @@ public class DataInitializer {
 
                 userRepo.save(admin);
                 System.out.println("✅ Usuario ADMIN creado correctamente");
+            }
+
+            //Create user SERVICE if not exist
+            if (!userRepo.existsByUsername(serviceUsername)) {
+                Role serviceRole = roleRepo.findByRoleName("SERVICE").orElseThrow();
+
+                UserApp service = new UserApp();
+                service.setUsername(serviceUsername);
+                service.setPassword(passwordEncoder.encode(servicePassword));
+                service.setEnabled(true);
+                service.setAccountNotExpired(true);
+                service.setCredentialsNotExpired(true);
+                service.setAccountNotLocked(true);
+                service.setRole(serviceRole);
+
+                userRepo.save(service);
+                System.out.println("✅ Usuario SERVICE creado correctamente");
+
+
             }
         };
     }

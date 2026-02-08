@@ -1,5 +1,6 @@
 package com.camicompany.sales_service.security.config.feign;
 
+import com.camicompany.sales_service.security.config.ServiceTokenProvider;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,26 +11,22 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Configuration
-public class FeignClientInterceptor {
+public class FeignAuthServiceInterceptor {
+
+    private final ServiceTokenProvider tokenProvider;
+
+    public FeignAuthServiceInterceptor(ServiceTokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
 
     @Bean
     public RequestInterceptor requestInterceptor() {
         return new RequestInterceptor() {
             @Override
             public void apply(RequestTemplate template) {
-
-                ServletRequestAttributes attributes =
-                        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-                if (attributes != null) {
-                    HttpServletRequest request = attributes.getRequest();
-                    String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-                    if (authHeader != null) {
-                        template.header(HttpHeaders.AUTHORIZATION, authHeader);
-                    }
-                }
+                template.header("Authorization", "Bearer " + tokenProvider.getToken());
             }
         };
+
     }
 }
