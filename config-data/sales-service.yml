@@ -29,6 +29,12 @@ spring:
       enabled: true
       path: /h2-console
 
+app:
+  service:
+    username: ${SERVICE_USERNAME}
+    password: ${SERVICE_PASSWORD}
+
+
 server:
   port: 8081
 
