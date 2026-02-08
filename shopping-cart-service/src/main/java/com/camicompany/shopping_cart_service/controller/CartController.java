@@ -93,6 +93,7 @@ public class CartController {
 
     @Hidden
     @PutMapping("/mark-as-sold/{id}")
+    @PreAuthorize("hasRole('SERVICE')")
     public ResponseEntity<Void> markCartAsSold(@PathVariable("id") Long cartId) {
         cartServ.markCartAsSold(cartId);
         return ResponseEntity.noContent().build();
