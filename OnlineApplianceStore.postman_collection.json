@@ -188,6 +188,86 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Decrese-stock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA0NjU4MjUsImV4cCI6MTc3MDQ2NzYyNSwibmJmIjoxNzcwNDY1ODI1fQ.Y67bBuPJUVVwhKxjQkOTjt0e-qRmHVmA2Js-dX1H9MI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "2",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/api/products/restore-stock/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"products",
+								"restore-stock",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "restore-stock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA0NjU4MjUsImV4cCI6MTc3MDQ2NzYyNSwibmJmIjoxNzcwNDY1ODI1fQ.Y67bBuPJUVVwhKxjQkOTjt0e-qRmHVmA2Js-dX1H9MI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "2",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/api/products/restore-stock/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"products",
+								"restore-stock",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -305,6 +385,41 @@
 							"path": [
 								"api",
 								"cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "try mark-as-sold Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA1NTM5ODMsImV4cCI6MTc3MDU1NTc4MywibmJmIjoxNzcwNTUzOTgzfQ.dn4Dy6N17oZykH4WOva4q9La9TaJeBIuKydrJaTSI-c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 4\n    }\n  ]\n}\n"
+						},
+						"url": {
+							"raw": "localhost:8082/api/cart/mark-as-sold/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cart",
+								"mark-as-sold",
+								"1"
 							]
 						}
 					},
@@ -557,6 +672,16 @@
 						{
 							"name": "Product ",
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA0NjU4MjUsImV4cCI6MTc3MDQ2NzYyNSwibmJmIjoxNzcwNDY1ODI1fQ.Y67bBuPJUVVwhKxjQkOTjt0e-qRmHVmA2Js-dX1H9MI",
+											"type": "string"
+										}
+									]
+								},
 								"method": "PUT",
 								"header": [],
 								"body": {
@@ -622,6 +747,108 @@
 										"api",
 										"products",
 										"activate",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Product All",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8000/products-service/api/products",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"products-service",
+										"api",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Decrese-stock",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA0NjU4MjUsImV4cCI6MTc3MDQ2NzYyNSwibmJmIjoxNzcwNDY1ODI1fQ.Y67bBuPJUVVwhKxjQkOTjt0e-qRmHVmA2Js-dX1H9MI",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "2",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/products-service/api/products/decrease-stock/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"products-service",
+										"api",
+										"products",
+										"decrease-stock",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "restore-stock",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA1NTM5ODMsImV4cCI6MTc3MDU1NTc4MywibmJmIjoxNzcwNTUzOTgzfQ.dn4Dy6N17oZykH4WOva4q9La9TaJeBIuKydrJaTSI-c",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "2",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8000/products-service/api/products/restore-stock/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"products-service",
+										"api",
+										"products",
+										"restore-stock",
 										"1"
 									]
 								}
@@ -749,6 +976,42 @@
 										"shopping-cart-service",
 										"api",
 										"cart"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "try mark-as-sold",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYW1pYWRtaW4iLCJzdWIiOiJ1c2VyMTEiLCJhdXRob3JpdGllcyI6IkNSRUFURSxSRUFELFJPTEVfVVNFUixVUERBVEUiLCJpYXQiOjE3NzA1NTM5ODMsImV4cCI6MTc3MDU1NTc4MywibmJmIjoxNzcwNTUzOTgzfQ.dn4Dy6N17oZykH4WOva4q9La9TaJeBIuKydrJaTSI-c",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\n{\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 4\n    }\n  ]\n}\n"
+								},
+								"url": {
+									"raw": "localhost:8000/shopping-cart-service/api/cart/mark-as-sold/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"shopping-cart-service",
+										"api",
+										"cart",
+										"mark-as-sold",
+										"1"
 									]
 								}
 							},
