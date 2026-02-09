@@ -113,46 +113,68 @@ All other microservices validate JWT tokens locally using a shared public key an
 
 ## 🔐 Distributed Security Architecture (JWT + Spring Security)
 
-This project implements distributed authentication and authorization using JWT and Spring Security across all microservices.
+This project implements a **dual-token security model** using JWT and Spring Security, clearly separating **user authentication** from **service-to-service authorization**.
 
-#### Authentication Flow
+### Authentication Flow (User Requests)
 
-- User authenticates against **Auth Service**
-- **Auth Service** issues a JWT containing:
-  - `username`
-  - `roles` / `authorities`
-- Client sends the JWT in the request header:
-  - `Authorization: Bearer <token>`
-- API Gateway routes the request to the target microservice
+- A client authenticates against **Auth Service**
+- **Auth Service** issues a **User JWT** containing:
+    - `username`
+    - `roles` / `authorities`
+- The client sends the token in each request:
+    - `Authorization: Bearer <user-token>`
+- Requests enter the system through the **API Gateway**
 - Each microservice:
-  - Validates the token using a JWT filter
-  - Builds an `Authentication` object in the `SecurityContext`
-  - Applies endpoint- and method-level authorization
+    - Validates the JWT locally using a shared public key
+    - Builds the `Authentication` object in the `SecurityContext`
+    - Applies endpoint- and method-level authorization (`@PreAuthorize`)
 
-#### Inter-Service Communication Security
+This ensures fully **stateless user authentication** across the platform.
 
-- When a microservice calls another (e.g., **Sales → Cart → Products**) the user JWT must be propagated.
-- Implemented using a **Feign Request Interceptor** that:
-  - Captures the incoming `Authorization` header
-  - Forwards it automatically in outgoing Feign requests
-- This ensures:
-  - User identity is preserved
-  - Role-based authorization works across services
-  - No service-to-service anonymous calls
+### Inter-Service Communication Security (Service Tokens)
 
-#### Authorization Levels
+Inter-service communication (e.g. **Sales → Shopping Cart → Products**) does **not** propagate the user token.
 
-- **Filter chain** — coarse-grained access (public vs authenticated)
-- **Method security** (`@PreAuthorize`) — fine-grained rules:
-  - Role-based: `hasRole('ADMIN')`
-  - Authentication-based: `isAuthenticated()`
+Instead, the system uses **dedicated Service JWTs** issued by the **Auth Service**.
 
-#### Benefits
+#### Service Authentication Flow
 
-- Stateless security
-- No session sharing
-- No centralized auth bottleneck
-- Production-style security model
+- Each business microservice authenticates once against **Auth Service** using service credentials
+- **Auth Service** issues a **Service JWT** with:
+    - `ROLE_SERVICE`
+    - Service-level authorities
+- The token is cached in memory by the calling service
+- All outgoing Feign requests automatically include:
+    - `Authorization: Bearer <service-token>`
+- Target services expose **internal endpoints** protected by:
+    - `@PreAuthorize("hasRole('SERVICE')")`
+
+This approach ensures:
+- Clear separation between **user context** and **system context**
+- No dependency on user identity for internal operations
+- Strong security boundaries between public and internal APIs
+
+### Authorization Model
+
+The system enforces authorization at multiple levels:
+
+- **Public endpoints**
+    - Authentication and registration
+- **User-protected endpoints**
+    - Require authenticated users
+    - Enforce ownership and role checks (ADMIN / USER)
+- **Internal service endpoints**
+    - Accessible only with `ROLE_SERVICE`
+    - No user ownership logic
+    - Used exclusively for service-to-service operations
+
+### Benefits
+
+- Clear separation of concerns
+- Strong security boundaries
+- No token leakage between users and services
+- Stateless and scalable architecture
+- Production-grade microservices security model
 
 ## � API Documentation
 ### 🌐 Centralized Documentation (Recommended)
