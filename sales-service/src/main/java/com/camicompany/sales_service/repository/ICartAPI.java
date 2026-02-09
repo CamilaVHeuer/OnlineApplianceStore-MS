@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @FeignClient(name="shopping-cart-service",
         configuration = FeignAuthServiceInterceptor.class)
 public interface ICartAPI {
-    @GetMapping("/api/cart/{id}")
+    @GetMapping("/api/cart/internal/{id}")
     public CartDTO getCartById(@PathVariable ("id") Long cardId);
 
     @PutMapping("/api/cart/mark-as-sold/{id}")

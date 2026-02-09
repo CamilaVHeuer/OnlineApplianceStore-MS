@@ -99,4 +99,11 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
+    @Hidden
+    @GetMapping("/internal/{id}")
+    @PreAuthorize("hasRole('SERVICE')")
+    public ResponseEntity<CartResponseDTO> getCartByIdForSales(@PathVariable("id") Long cartId) {
+        return ResponseEntity.ok(cartServ.getCartByIdForSale(cartId));
+    }
+
 }

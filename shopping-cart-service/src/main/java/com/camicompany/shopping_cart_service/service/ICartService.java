@@ -10,7 +10,9 @@ public interface ICartService {
 
     public List<CartResponseDTO> getAllCarts();
 
+
     public CartResponseDTO getCartById(Long cartId);
+    public CartResponseDTO getCartByIdForSale(Long cartId);
 
     public void deleteCart(Long cartId);
 

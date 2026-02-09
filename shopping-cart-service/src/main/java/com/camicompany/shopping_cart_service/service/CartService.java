@@ -51,6 +51,12 @@ public class CartService implements ICartService {
     }
 
     @Override
+    public CartResponseDTO getCartByIdForSale(Long cartId) {
+        Cart cart = findCartOrThrow(cartId);
+        return Mapper.toDTO(cart);
+    }
+
+    @Override
     public void deleteCart(Long cartId) {
         Cart cart = findCartOrThrow(cartId);
         ensureOwnerOrAdmin(cart);
